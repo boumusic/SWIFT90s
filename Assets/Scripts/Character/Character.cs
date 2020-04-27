@@ -39,7 +39,7 @@ public class Character : MonoBehaviour
     #endregion
 
     #endregion
-    
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -64,7 +64,7 @@ public class Character : MonoBehaviour
         CalculateHorizontalAcceleration();
         CalculateHorizontalVelocity();
         OrientModelToDirection();
-        
+
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
     }
 
@@ -79,6 +79,8 @@ public class Character : MonoBehaviour
 
     #region Input
 
+    private bool downButton = false;
+
     private void DebugInput()
     {
         InputHorizontal(Input.GetAxisRaw("Horizontal"));
@@ -86,11 +88,18 @@ public class Character : MonoBehaviour
         {
             StartJump();
         }
+
+        InputDownButton(Input.GetKey(KeyCode.S));
     }
 
     public void InputHorizontal(float horizontal)
     {
         this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
+    }
+
+    public void InputDownButton(bool down)
+    {
+        downButton = down;
     }
 
     #endregion
@@ -161,6 +170,15 @@ public class Character : MonoBehaviour
         {
             stateMachine.ChangeState(CharacterState.Falling);
         }
+
+        else
+        {
+            if(downButton && walkingOnPassThroughPlatform)
+            {
+                CanPassThrough(true);
+                stateMachine.ChangeState(CharacterState.Falling);
+            }
+        }
     }
 
     #endregion
@@ -222,21 +240,44 @@ public class Character : MonoBehaviour
 
     private void Falling_Update()
     {
-        if(CastGround())
+        if (CastGround())
         {
-            SnapToGround();
-            stateMachine.ChangeState(CharacterState.Grounded);
+            bool land = false;
+            if (walkingOnPassThroughPlatform)
+            {
+                if (downButton)
+                {
+                    CanPassThrough(true);                    
+                }
+
+                else
+                {
+                    land = true;
+                }
+            }
+
+            else
+            {
+                land = true;
+            }
+
+            if(land)
+            {
+                CanPassThrough(false);
+                SnapToGround();
+                stateMachine.ChangeState(CharacterState.Grounded);
+            }
         }
         fallProgress += Time.deltaTime / m.timeToReachMaxFall;
         fallProgress = Mathf.Clamp01(fallProgress);
         float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed, m.fallCurve.Evaluate(fallProgress));
         SetVerticalVelocity(fall);
 
-        if(CastWall())
+        if (CastWall())
         {
             stateMachine.ChangeState(CharacterState.WallSliding);
         }
-        
+
     }
 
     #endregion
@@ -259,12 +300,12 @@ public class Character : MonoBehaviour
         float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
         SetVerticalVelocity(slide);
 
-        if(!CastWall())
+        if (!CastWall())
         {
             stateMachine.ChangeState(CharacterState.Falling);
         }
 
-        if(CastGround())
+        if (CastGround())
         {
             SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
@@ -308,7 +349,7 @@ public class Character : MonoBehaviour
 
     public bool CastWall()
     {
-        if(Physics.Raycast(transform.position + Vector3.up * 1.5f, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position + Vector3.up * 1.5f, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -325,10 +366,10 @@ public class Character : MonoBehaviour
 
     #region Layer
 
-    private bool canPassThrough = false;
+    private bool walkingOnPassThroughPlatform => hitGround.collider != null ? hitGround.collider.gameObject.layer == m.passThroughLayer : false;
+    private bool canPassThrough => gameObject.layer == m.passThroughLayer;
     private void CanPassThrough(bool pass)
     {
-        canPassThrough = pass;
         gameObject.layer = pass ? m.passThroughLayer : m.defaultLayer;
     }
 

@@ -26,6 +26,7 @@ public class CharacterSettings : ScriptableObject
     [Header("Pass through Platform")]
     public int defaultLayer;
     public int passThroughLayer;
+    public float fallThroughDuration = 0.5f;
 
     [Header("Cast")]
     public LayerMask groundMask;
