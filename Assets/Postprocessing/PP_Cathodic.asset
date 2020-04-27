@@ -88,6 +88,38 @@ MonoBehaviour:
   resolution:
     overrideState: 1
     value: 384
+--- !u!114 &-5965731010912656140
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41339caf8e7024647849b36eebfb6880, type: 3}
+  m_Name: RandomGlitchPP
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  distort:
+    overrideState: 1
+    value: 0.032
+  tiling:
+    overrideState: 1
+    value: 200
+  scroll:
+    overrideState: 1
+    value: -20
+  speed:
+    overrideState: 1
+    value: 0.8
+  texture:
+    overrideState: 1
+    value: {fileID: 2800000, guid: 19eb7d961c86bd345945a0451a2602c8, type: 3}
+    defaultState: 1
 --- !u!114 &-5010299860900108156
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1448,6 +1480,7 @@ MonoBehaviour:
   - {fileID: -7687040904726084262}
   - {fileID: -2786599740340027918}
   - {fileID: -5010299860900108156}
+  - {fileID: -5965731010912656140}
 --- !u!114 &1193177104584496631
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -1057,7 +1057,7 @@ MonoBehaviour:
   sharedProfile: {fileID: 11400000, guid: aeb20a8de79443c43a14f53339c2d614, type: 2}
   isGlobal: 1
   blendDistance: 0
-  weight: 1
+  weight: 0
   priority: 0
 --- !u!1 &1476445421
 GameObject:
@@ -1483,35 +1483,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4430181479361662707, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
-        type: 3}
-      propertyPath: field of view
-      value: 57.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4430181479361662707, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
-        type: 3}
-      propertyPath: m_ClearFlags
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4430181479361662707, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
-        type: 3}
-      propertyPath: m_BackGroundColor.r
-      value: 0.26477396
-      objectReference: {fileID: 0}
-    - target: {fileID: 4430181479361662707, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
-        type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0.5116756
-      objectReference: {fileID: 0}
-    - target: {fileID: 4430181479361662707, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
-        type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0.6603774
-      objectReference: {fileID: 0}
     - target: {fileID: 4430181479361662717, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
         type: 3}
       propertyPath: m_AfterStackBundles.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4430181479361662717, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
         type: 3}
@@ -1532,6 +1507,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AfterStackBundles.Array.data[0].assemblyQualifiedName
       value: Chromab, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430181479361662717, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
+        type: 3}
+      propertyPath: m_AfterStackBundles.Array.data[3].assemblyQualifiedName
+      value: RandomGlitchPP, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 847a57ae1011f7c43ba3eb87f7226ab1, type: 3}
