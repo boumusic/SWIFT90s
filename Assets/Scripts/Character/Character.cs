@@ -39,7 +39,7 @@ public class Character : MonoBehaviour
     #endregion
 
     #endregion
-    
+
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -64,7 +64,7 @@ public class Character : MonoBehaviour
         CalculateHorizontalAcceleration();
         CalculateHorizontalVelocity();
         OrientModelToDirection();
-        
+
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
     }
 
@@ -72,12 +72,14 @@ public class Character : MonoBehaviour
     {
         DrawBox();
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
+        Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, transform.position + Vector3.up * 1.5f + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
     }
 
     #endregion
 
     #region Input
+
+    private bool downButton = false;
 
     private void DebugInput()
     {
@@ -86,11 +88,22 @@ public class Character : MonoBehaviour
         {
             StartJump();
         }
+
+        InputDownButton(Input.GetKey(KeyCode.S));
+        if(Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            Dodge();
+        }
     }
 
     public void InputHorizontal(float horizontal)
     {
         this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
+    }
+
+    public void InputDownButton(bool down)
+    {
+        downButton = down;
     }
 
     #endregion
@@ -137,7 +150,8 @@ public class Character : MonoBehaviour
 
     private void ApplyVelocity()
     {
-        body.velocity = velocity;
+        if (p.IsPropelling) body.velocity = p.Velocity();
+        else body.velocity = velocity;
     }
 
     #endregion
@@ -149,6 +163,7 @@ public class Character : MonoBehaviour
     private void Grounded_Enter()
     {
         Debug.Log("Enter Ground");
+        CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
         animator.Land();
@@ -156,9 +171,18 @@ public class Character : MonoBehaviour
 
     private void Grounded_Update()
     {
-        if(!CastGround())
+        if (!CastGround())
         {
             stateMachine.ChangeState(CharacterState.Falling);
+        }
+
+        else
+        {
+            if(downButton && walkingOnPassThroughPlatform)
+            {
+                CanPassThrough(true);
+                stateMachine.ChangeState(CharacterState.Falling);
+            }
         }
     }
 
@@ -183,6 +207,7 @@ public class Character : MonoBehaviour
         animator.Jump(jumpLeft == 0);
         jumpProgress = 0f;
         SnapAccelToAxis();
+        CanPassThrough(true);
     }
 
     private void Jumping_Update()
@@ -190,10 +215,14 @@ public class Character : MonoBehaviour
         jumpProgress += Time.deltaTime / m.jumpDuration;
         float strength = m.jumpCurve.Evaluate(jumpProgress) * m.jumpStrength;
         SetVerticalVelocity(strength);
+
+
         if (jumpProgress > 1f)
         {
+            SetVerticalVelocity(0);
             stateMachine.ChangeState(CharacterState.Falling);
         }
+
     }
 
     private void ResetJumpCount()
@@ -216,19 +245,45 @@ public class Character : MonoBehaviour
 
     private void Falling_Update()
     {
-        fallProgress += Time.deltaTime / m.timeToReachMaxFall;
-        fallProgress = Mathf.Clamp01(fallProgress);
-        float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed, m.fallCurve.Evaluate(fallProgress));
-        SetVerticalVelocity(fall);
-        if(CastGround())
+        if(!p.IsPropelling)
         {
-            SnapToGround();
-            stateMachine.ChangeState(CharacterState.Grounded);
-        }
+            if (CastGround())
+            {
+                bool land = false;
+                if (walkingOnPassThroughPlatform)
+                {
+                    if (downButton)
+                    {
+                        CanPassThrough(true);
+                    }
 
-        if(CastWall())
-        {
-            stateMachine.ChangeState(CharacterState.WallSliding);
+                    else
+                    {
+                        land = true;
+                    }
+                }
+
+                else
+                {
+                    land = true;
+                }
+
+                if (land)
+                {
+                    CanPassThrough(false);
+                    SnapToGround();
+                    stateMachine.ChangeState(CharacterState.Grounded);
+                }
+            }
+            fallProgress += Time.deltaTime / m.timeToReachMaxFall;
+            fallProgress = Mathf.Clamp01(fallProgress);
+            float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed, m.fallCurve.Evaluate(fallProgress));
+            SetVerticalVelocity(fall);
+
+            if (CastWall())
+            {
+                stateMachine.ChangeState(CharacterState.WallSliding);
+            }
         }
     }
 
@@ -241,6 +296,7 @@ public class Character : MonoBehaviour
     {
         wallSlidingProgress = 0f;
         SetVerticalVelocity(-m.minWallSlideSpeed);
+        SetHorizontalVelocity(0);
     }
 
     private void WallSliding_Update()
@@ -250,14 +306,16 @@ public class Character : MonoBehaviour
 
         float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
         SetVerticalVelocity(slide);
+        SetHorizontalVelocity(0);
 
-        if(!CastWall())
+        if (!CastWall())
         {
             stateMachine.ChangeState(CharacterState.Falling);
         }
 
-        if(CastGround())
+        if (CastGround())
         {
+            SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
         }
     }
@@ -266,14 +324,26 @@ public class Character : MonoBehaviour
 
     #region Cast
 
-    public Vector3 FeetOrigin => transform.position + Vector3.up * m.groundRaycastUp;
+    public Vector3 FeetOrigin => transform.position + Vector3.up * m.castGroundOrigin;
+    public Vector3 HeadOrigin => transform.position + Vector3.up * m.castCeilingOrigin;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
     private RaycastHit hitGround;
+    private RaycastHit hitCeiling;
     private RaycastHit hitWall;
 
     private void DrawBox()
     {
         BoxCastDrawer.DrawBoxCastBox(FeetOrigin, CastBox * m.groundCastRadius, Quaternion.identity, -Vector3.up, m.groundRaycastDown, Color.red);
+        BoxCastDrawer.DrawBoxCastBox(HeadOrigin, CastBox * m.groundCastRadius, Quaternion.identity, Vector3.up, m.castCeilingLength, Color.yellow);
+    }
+
+    public bool CastCeiling()
+    {
+        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.groundMask))
+        {
+            return true;
+        }
+        return false;
     }
 
     public bool CastGround()
@@ -287,7 +357,7 @@ public class Character : MonoBehaviour
 
     public bool CastWall()
     {
-        if(Physics.Raycast(transform.position, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position + Vector3.up * 1.5f, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -298,6 +368,31 @@ public class Character : MonoBehaviour
     private void SnapToGround()
     {
         body.position = new Vector3(body.position.x, hitGround.point.y, body.position.z);
+    }
+
+    #endregion
+
+    #region Layer
+
+    private bool walkingOnPassThroughPlatform => hitGround.collider != null ? hitGround.collider.gameObject.layer == m.passThroughLayer : false;
+    private bool canPassThrough => gameObject.layer == m.passThroughLayer;
+    private void CanPassThrough(bool pass)
+    {
+        gameObject.layer = pass ? m.passThroughLayer : m.defaultLayer;
+    }
+
+    #endregion
+
+    #region Dodge
+    private Vector3 mousePos => Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    public Vector3 mouseDir => (mousePos - transform.position).normalized;
+    public void Dodge()
+    {
+        Debug.Log(mousePos);
+        GameObject.Find("SUCE").transform.position = mousePos;
+        animator.Dodge();
+        Vector3 dir = mouseDir;
+        p.RegisterPropulsion(dir, m.dodge);
     }
 
     #endregion

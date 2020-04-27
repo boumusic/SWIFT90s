@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CharacterSettings
   m_EditorClassIdentifier: 
   runSpeed: 7
-  groundedAcceleration: 7
-  groundedDeceleration: 1.3
+  groundedAcceleration: 10
+  groundedDeceleration: 1.5
   jumpCount: 2
   jumpStrength: 21
   jumpCurve:
@@ -60,10 +60,10 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   jumpDuration: 0.25
-  aerialAcceleration: 4.5
+  aerialAcceleration: 6
   aerialDeceleration: 1.02
-  timeToReachMaxFall: 0.8
-  maxFallSpeed: 30
+  timeToReachMaxFall: 0.6
+  maxFallSpeed: 50
   fallCurve:
     serializedVersion: 2
     m_Curve:
@@ -88,17 +88,85 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  defaultLayer: 0
+  passThroughLayer: 10
+  fallThroughDuration: 0.5
+  dodge:
+    strength: 35
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.016544405
+        value: 1.0035129
+        inSlope: 0.012326627
+        outSlope: -0.022721266
+        tangentMode: 65
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.18908393
+        value: 0.99959254
+        inSlope: -0.022721266
+        outSlope: -12.957438
+        tangentMode: 5
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.23721
+      - serializedVersion: 3
+        time: 0.30155337
+        value: 0.14388299
+        inSlope: -5.3335032
+        outSlope: -0.25562015
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.60649765
+        outWeight: 0.0993228
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -0.07682467
+        outSlope: -0.07682467
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    duration: 0.15
+    airControl: 0
+    direction: {x: 0, y: 0, z: 0}
+    priority: 0
+    separateAxes: 0
+    strengthHoriz: 0
+    curveHoriz:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    strengthVerti: 0
+    curveVerti:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   groundMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1536
   groundCastRadius: 1
   castBoxWidth: 0.24
-  groundRaycastDown: 0.43
-  groundRaycastUp: 0.2
+  groundRaycastDown: 0.82
+  castGroundOrigin: 0.47
   castWallLength: 1
+  castCeilingOrigin: 1.88
+  castCeilingLength: 0.54
   timeToReachMaxSlide: 0.5
   minWallSlideSpeed: 0.5
-  maxWallSlideSpeed: 1.5
+  maxWallSlideSpeed: 3
   slideCurve:
     serializedVersion: 2
     m_Curve:
