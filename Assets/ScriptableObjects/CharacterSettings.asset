@@ -95,3 +95,31 @@ MonoBehaviour:
   castBoxWidth: 0.24
   groundRaycastDown: 0.43
   groundRaycastUp: 0.2
+  castWallLength: 1
+  timeToReachMaxSlide: 0.5
+  minWallSlideSpeed: 0.5
+  maxWallSlideSpeed: 1.5
+  slideCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
