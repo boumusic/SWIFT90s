@@ -12,7 +12,7 @@ public class CharacterAnimator : MonoBehaviour
     public Action onAttackAnim;
     public Action onDeathAnim;
     public Action onDoubleJumpAnim;
-    public Action onDashAnim;
+    public Action onDodgeAnim;
 
     public void Run(bool value)
     {
@@ -78,10 +78,10 @@ public class CharacterAnimator : MonoBehaviour
         onDeathAnim?.Invoke();
     }
 
-    public void Dash()
+    public void Dodge()
     {
-        Trigger("Dash");
-        onDashAnim?.Invoke();
+        Trigger("Dodge");
+        onDodgeAnim?.Invoke();
     }
 
     public void WallClimb(bool climb)

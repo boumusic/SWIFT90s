@@ -90,6 +90,10 @@ public class Character : MonoBehaviour
         }
 
         InputDownButton(Input.GetKey(KeyCode.S));
+        if(Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            Dodge();
+        }
     }
 
     public void InputHorizontal(float horizontal)
@@ -146,7 +150,8 @@ public class Character : MonoBehaviour
 
     private void ApplyVelocity()
     {
-        body.velocity = velocity;
+        if (p.IsPropelling) body.velocity = p.Velocity();
+        else body.velocity = velocity;
     }
 
     #endregion
@@ -240,44 +245,46 @@ public class Character : MonoBehaviour
 
     private void Falling_Update()
     {
-        if (CastGround())
+        if(!p.IsPropelling)
         {
-            bool land = false;
-            if (walkingOnPassThroughPlatform)
+            if (CastGround())
             {
-                if (downButton)
+                bool land = false;
+                if (walkingOnPassThroughPlatform)
                 {
-                    CanPassThrough(true);                    
+                    if (downButton)
+                    {
+                        CanPassThrough(true);
+                    }
+
+                    else
+                    {
+                        land = true;
+                    }
                 }
 
                 else
                 {
                     land = true;
                 }
-            }
 
-            else
-            {
-                land = true;
+                if (land)
+                {
+                    CanPassThrough(false);
+                    SnapToGround();
+                    stateMachine.ChangeState(CharacterState.Grounded);
+                }
             }
+            fallProgress += Time.deltaTime / m.timeToReachMaxFall;
+            fallProgress = Mathf.Clamp01(fallProgress);
+            float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed, m.fallCurve.Evaluate(fallProgress));
+            SetVerticalVelocity(fall);
 
-            if(land)
+            if (CastWall())
             {
-                CanPassThrough(false);
-                SnapToGround();
-                stateMachine.ChangeState(CharacterState.Grounded);
+                stateMachine.ChangeState(CharacterState.WallSliding);
             }
         }
-        fallProgress += Time.deltaTime / m.timeToReachMaxFall;
-        fallProgress = Mathf.Clamp01(fallProgress);
-        float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed, m.fallCurve.Evaluate(fallProgress));
-        SetVerticalVelocity(fall);
-
-        if (CastWall())
-        {
-            stateMachine.ChangeState(CharacterState.WallSliding);
-        }
-
     }
 
     #endregion
@@ -299,6 +306,7 @@ public class Character : MonoBehaviour
 
         float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
         SetVerticalVelocity(slide);
+        SetHorizontalVelocity(0);
 
         if (!CastWall())
         {
@@ -371,6 +379,20 @@ public class Character : MonoBehaviour
     private void CanPassThrough(bool pass)
     {
         gameObject.layer = pass ? m.passThroughLayer : m.defaultLayer;
+    }
+
+    #endregion
+
+    #region Dodge
+    private Vector3 mousePos => Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    public Vector3 mouseDir => (mousePos - transform.position).normalized;
+    public void Dodge()
+    {
+        Debug.Log(mousePos);
+        GameObject.Find("SUCE").transform.position = mousePos;
+        animator.Dodge();
+        Vector3 dir = mouseDir;
+        p.RegisterPropulsion(dir, m.dodge);
     }
 
     #endregion

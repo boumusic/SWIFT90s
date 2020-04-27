@@ -28,6 +28,9 @@ public class CharacterSettings : ScriptableObject
     public int passThroughLayer;
     public float fallThroughDuration = 0.5f;
 
+    [Header("Dodge")]
+    public Propulsion dodge;
+
     [Header("Cast")]
     public LayerMask groundMask;
     [Header("Ground")]
