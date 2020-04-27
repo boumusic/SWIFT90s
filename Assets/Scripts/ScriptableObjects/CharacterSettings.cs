@@ -23,15 +23,22 @@ public class CharacterSettings : ScriptableObject
     public float maxFallSpeed = 20;
     public AnimationCurve fallCurve;
 
+    [Header("Pass through Platform")]
+    public int defaultLayer;
+    public int passThroughLayer;
+
     [Header("Cast")]
     public LayerMask groundMask;
     [Header("Ground")]
     public float groundCastRadius = 1;
     public float castBoxWidth = 1;
     public float groundRaycastDown = 1;
-    public float groundRaycastUp = 1;
+    public float castGroundOrigin = 1;
     [Header("Wall")]
     public float castWallLength = 1f;
+    [Header("Ceiling")]
+    public float castCeilingOrigin = 1;
+    public float castCeilingLength = 1f;
 
     [Header("Wallslide")]
     public float timeToReachMaxSlide = 0.5f;

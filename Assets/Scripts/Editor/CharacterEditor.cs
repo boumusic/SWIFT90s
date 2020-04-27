@@ -34,6 +34,7 @@ public class CharacterEditor : Editor
 
         Label("Current State", t.CurrentState.ToString());
         Label("Velocity", t.Velocity.ToString());
+        Label("Body Velocity", t.body.velocity.ToString());
         Label("Horizontal Axis", t.HorizontalAxis.ToString());
         Label("Horizontal Acceleration", t.XAccel.ToString());
 

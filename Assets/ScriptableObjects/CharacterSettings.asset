@@ -60,7 +60,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   jumpDuration: 0.25
-  aerialAcceleration: 4.5
+  aerialAcceleration: 6
   aerialDeceleration: 1.02
   timeToReachMaxFall: 0.8
   maxFallSpeed: 30
@@ -88,17 +88,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  defaultLayer: 0
+  passThroughLayer: 10
   groundMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1536
   groundCastRadius: 1
   castBoxWidth: 0.24
   groundRaycastDown: 0.43
-  groundRaycastUp: 0.2
+  castGroundOrigin: 0.15
   castWallLength: 1
+  castCeilingOrigin: 1.88
+  castCeilingLength: 0.54
   timeToReachMaxSlide: 0.5
   minWallSlideSpeed: 0.5
-  maxWallSlideSpeed: 1.5
+  maxWallSlideSpeed: 3
   slideCurve:
     serializedVersion: 2
     m_Curve:
