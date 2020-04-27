@@ -25,8 +25,17 @@ public class CharacterSettings : ScriptableObject
 
     [Header("Cast")]
     public LayerMask groundMask;
+    [Header("Ground")]
     public float groundCastRadius = 1;
     public float castBoxWidth = 1;
     public float groundRaycastDown = 1;
     public float groundRaycastUp = 1;
+    [Header("Wall")]
+    public float castWallLength = 1f;
+
+    [Header("Wallslide")]
+    public float timeToReachMaxSlide = 0.5f;
+    public float minWallSlideSpeed = 4f;
+    public float maxWallSlideSpeed = 4f;
+    public AnimationCurve slideCurve;
 }

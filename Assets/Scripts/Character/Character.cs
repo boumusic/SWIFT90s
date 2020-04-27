@@ -71,6 +71,8 @@ public class Character : MonoBehaviour
     private void OnDrawGizmos()
     {
         DrawBox();
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
     }
 
     #endregion
@@ -223,6 +225,41 @@ public class Character : MonoBehaviour
             SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
         }
+
+        if(CastWall())
+        {
+            stateMachine.ChangeState(CharacterState.WallSliding);
+        }
+    }
+
+    #endregion
+
+    #region WallSliding
+
+    private float wallSlidingProgress = 0f;
+    private void WallSliding_Enter()
+    {
+        wallSlidingProgress = 0f;
+        SetVerticalVelocity(-m.minWallSlideSpeed);
+    }
+
+    private void WallSliding_Update()
+    {
+        wallSlidingProgress += Time.deltaTime / m.timeToReachMaxSlide;
+        wallSlidingProgress = Mathf.Clamp01(wallSlidingProgress);
+
+        float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
+        SetVerticalVelocity(slide);
+
+        if(!CastWall())
+        {
+            stateMachine.ChangeState(CharacterState.Falling);
+        }
+
+        if(CastGround())
+        {
+            stateMachine.ChangeState(CharacterState.Grounded);
+        }
     }
 
     #endregion
@@ -231,7 +268,8 @@ public class Character : MonoBehaviour
 
     public Vector3 FeetOrigin => transform.position + Vector3.up * m.groundRaycastUp;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
-    private RaycastHit hit;
+    private RaycastHit hitGround;
+    private RaycastHit hitWall;
 
     private void DrawBox()
     {
@@ -240,16 +278,26 @@ public class Character : MonoBehaviour
 
     public bool CastGround()
     {
-        if (Physics.BoxCast(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, out hit, Quaternion.identity, m.groundRaycastDown, m.groundMask))
+        if (Physics.BoxCast(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, out hitGround, Quaternion.identity, m.groundRaycastDown, m.groundMask))
         {
             return true;
         }
         return false;
     }
 
+    public bool CastWall()
+    {
+        if(Physics.Raycast(transform.position, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private void SnapToGround()
     {
-        body.position = new Vector3(body.position.x, hit.point.y, body.position.z);
+        body.position = new Vector3(body.position.x, hitGround.point.y, body.position.z);
     }
 
     #endregion
@@ -274,5 +322,6 @@ public enum CharacterState
     Grounded,
     Jumping,
     Falling,
-    WallClimbing
+    WallClimbing,
+    WallSliding
 }
