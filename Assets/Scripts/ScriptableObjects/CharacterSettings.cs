@@ -15,6 +15,8 @@ public class CharacterSettings : ScriptableObject
     public float jumpStrength = 5f;
     public AnimationCurve jumpCurve;
     public float jumpDuration = 0.7f;
+    public float aerialAcceleration = 0.5f;
+    [Range(1f, 2f)] public float aerialDeceleration = 1.1f;
 
     [Header("Fall")]
     public float timeToReachMaxFall = 4f;

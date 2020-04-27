@@ -11,6 +11,8 @@ public class Character : MonoBehaviour
     public Rigidbody body;
     public CharacterSettings m;
     public Propeller p;
+    public Animator visuals;
+    public CharacterAnimator animator;
 
     #region State
     private StateMachine<CharacterState> stateMachine;
@@ -37,8 +39,7 @@ public class Character : MonoBehaviour
     #endregion
 
     #endregion
-
-
+    
     #endregion
 
     #region MonoBehaviour Callbacks
@@ -47,7 +48,7 @@ public class Character : MonoBehaviour
     {
         stateMachine = StateMachine<CharacterState>.Initialize(this);
         stateMachine.ManualUpdate = true;
-        stateMachine.ChangeState(CharacterState.Grounded);
+        stateMachine.ChangeState(CharacterState.Falling);
         ResetJumpCount();
     }
 
@@ -62,6 +63,9 @@ public class Character : MonoBehaviour
         DebugInput();
         CalculateHorizontalAcceleration();
         CalculateHorizontalVelocity();
+        OrientModelToDirection();
+        
+        animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
     }
 
     private void OnDrawGizmos()
@@ -91,19 +95,27 @@ public class Character : MonoBehaviour
 
     #region Movement
 
+    public float CurrentAcceleration => grounded ? m.groundedAcceleration : m.aerialAcceleration;
+    public float CurrentDeceleration => grounded ? m.groundedDeceleration : m.aerialDeceleration;
+
     private void CalculateHorizontalAcceleration()
     {
         if (horizontalAxis != 0)
         {
-            xAccel += horizontalAxis * m.groundedAcceleration * Time.deltaTime;
+            xAccel += horizontalAxis * CurrentAcceleration * Time.deltaTime;
         }
 
         else
         {
-            xAccel /= (m.groundedDeceleration);
+            xAccel /= CurrentDeceleration;
         }
 
         xAccel = Mathf.Clamp(xAccel, -1f, 1f);
+    }
+
+    private void SnapAccelToAxis()
+    {
+        xAccel = horizontalAxis;
     }
 
     private void CalculateHorizontalVelocity()
@@ -130,10 +142,14 @@ public class Character : MonoBehaviour
 
     #region Grounded
 
+    private bool grounded => CurrentState == CharacterState.Grounded;
+
     private void Grounded_Enter()
     {
+        Debug.Log("Enter Ground");
         SetVerticalVelocity(0);
         ResetJumpCount();
+        animator.Land();
     }
 
     private void Grounded_Update()
@@ -162,7 +178,9 @@ public class Character : MonoBehaviour
     private void Jumping_Enter()
     {
         jumpLeft--;
+        animator.Jump(jumpLeft == 0);
         jumpProgress = 0f;
+        SnapAccelToAxis();
     }
 
     private void Jumping_Update()
@@ -202,6 +220,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(fall);
         if(CastGround())
         {
+            SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
         }
     }
@@ -223,7 +242,6 @@ public class Character : MonoBehaviour
     {
         if (Physics.BoxCast(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, out hit, Quaternion.identity, m.groundRaycastDown, m.groundMask))
         {
-            SnapToGround();
             return true;
         }
         return false;
@@ -231,7 +249,21 @@ public class Character : MonoBehaviour
 
     private void SnapToGround()
     {
-        body.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
+        body.position = new Vector3(body.position.x, hit.point.y, body.position.z);
+    }
+
+    #endregion
+
+    #region Visuals
+
+    private float lastDir = 1;
+
+    private void OrientModelToDirection()
+    {
+        if (horizontalAxis == 0) lastDir = Mathf.Sign(velocity.x);
+        else
+            lastDir = Mathf.Sign(velocity.x);
+        transform.forward = new Vector3(lastDir, 0, 0);
     }
 
     #endregion
