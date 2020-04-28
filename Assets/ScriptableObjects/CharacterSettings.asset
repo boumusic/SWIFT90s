@@ -329,7 +329,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   attackDuration: 0.2
   attackDelay: 0.2
-  attackLength: 0.12
-  attackOrigin: 1
-  attackWidth: 0.5
-  attackOffset: 1.08
+  attackLength: 0.95
+  attackOrigin: 0.92
+  attackWidth: 0.13
+  attackOffset: 0.72

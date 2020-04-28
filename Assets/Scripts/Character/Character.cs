@@ -16,7 +16,7 @@ public class Character : MonoBehaviour
 
     [Header("Debug")]
     public bool receiveDebugInput = true;
-
+    public GameObject hitbox;
     #region State
     private StateMachine<CharacterState> stateMachine;
     public CharacterState CurrentState => stateMachine != null ? stateMachine.State : CharacterState.Grounded;
@@ -427,37 +427,44 @@ public class Character : MonoBehaviour
     #region Attack
 
     public bool IsAttacking { get; private set; }
+    private bool CanAttack => !IsDodging;
     private float attackProgress = 0f;
 
     private void StartAttack()
     {
-        IsAttacking = true;
-        attackProgress = 0f;
+        if (CanAttack)
+        {
+            IsAttacking = true;
+            attackProgress = 0f;
+        }
     }
 
     private void AttackUpdate()
     {
-        
+        hitbox.SetActive(IsAttacking);
+        hitbox.transform.position = AttackOrigin;
         if (IsAttacking)
         {
             hitsAttack = Physics.BoxCastAll(AttackOrigin, AttackBox, actionDirection, Quaternion.identity, m.attackLength);
 
-            if(hitsAttack.Length > 0)
+            if (hitsAttack.Length > 0)
             {
                 for (int i = 0; i < hitsAttack.Length; i++)
                 {
-                    Debug.Log("Hit " + hitsAttack[i].collider.gameObject.name);
                     Character chara;
                     if (hitsAttack[i].collider.TryGetComponent(out chara))
                     {
-                        if(chara != this)
+                        if (chara != this)
                         {
-                            Debug.Log("Hit " + chara.gameObject.name);
-                            chara.gameObject.SetActive(false);
-                        }                       
+                            if (!chara.IsDodging)
+                            {
+                                chara.gameObject.SetActive(false);
+                                Debug.Log("Hit " + chara.gameObject.name);
+                            }
+                        }
                     }
                 }
-                
+
             }
 
             attackProgress += Time.deltaTime / m.attackDuration;
@@ -537,8 +544,10 @@ public class Character : MonoBehaviour
 
     #region Dodge
 
+    public bool IsDodging { get; private set; }
     public void Dodge()
     {
+        IsDodging = true;
         animator.Dodge();
         Vector3 dir = actionDirection;
         p.RegisterPropulsion(dir, m.dodge, EndDodge);
@@ -546,6 +555,7 @@ public class Character : MonoBehaviour
 
     private void EndDodge()
     {
+        IsDodging = false;
         ResetFallProgress();
     }
 
