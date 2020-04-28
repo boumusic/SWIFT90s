@@ -17,6 +17,9 @@ public class Character : MonoBehaviour
     public Collider defaultCollider;
     public GameObject dodgeCollider;
 
+    [Header("VFX")]
+    public ParticleSystem wallSlideFx;
+
     [Header("Debug")]
     public bool receiveDebugInput = true;
     public bool drawAttackHitbox;
@@ -229,6 +232,7 @@ public class Character : MonoBehaviour
     private void Grounded_Enter()
     {
         //Debug.Log("Enter Ground");
+        fb.Play("Land");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
@@ -391,6 +395,7 @@ public class Character : MonoBehaviour
         wallSlidingProgress = 0f;
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
+        wallSlideFx.Play();
     }
 
     private void WallSliding_Update()
@@ -417,6 +422,7 @@ public class Character : MonoBehaviour
     private void WallSliding_Exit()
     {
         animator.WallSliding(false);
+        wallSlideFx.Stop();
     }
 
     #endregion
@@ -489,7 +495,7 @@ public class Character : MonoBehaviour
 
         else
         {
-            if(!attackCooldownDone)
+            if (!attackCooldownDone)
             {
                 attackCooldownProgress += Time.deltaTime / m.attackCooldown;
                 if (attackCooldownProgress >= 1f)
@@ -497,15 +503,19 @@ public class Character : MonoBehaviour
                     attackCooldownProgress = 1f;
                     attackCooldownDone = true;
                 }
-            }            
+            }
         }
     }
 
     private void Kill(Character chara)
     {
-        chara.gameObject.SetActive(false);
-        fb.Play("Kill");
-        Debug.Log("Hit " + chara.gameObject.name);
+        if(!chara.IsDead)
+        {
+            chara.Die();
+            //chara.gameObject.SetActive(false);
+            fb.Play("Kill");
+            Debug.Log("Hit " + chara.gameObject.name);
+        }        
     }
 
     #endregion
@@ -514,7 +524,7 @@ public class Character : MonoBehaviour
 
     public Vector3 FeetOrigin => transform.position + Vector3.up * m.castGroundOrigin;
     public Vector3 HeadOrigin => transform.position + Vector3.up * m.castCeilingOrigin;
-    public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + (IsAttacking? lastAttackDirection : attackDirection) * m.attackOffset;
+    public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + (IsAttacking ? lastAttackDirection : attackDirection) * m.attackOffset;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
     public Vector3 AttackBox => new Vector3(m.attackWidth, m.attackWidth, m.attackWidth);
     private RaycastHit hitGround;
@@ -596,7 +606,7 @@ public class Character : MonoBehaviour
 
     public void Dodge()
     {
-        if(canDodge)
+        if (canDodge)
         {
             dodgeCooldownDone = false;
             dodgeCooldownProgress = 0f;
@@ -606,23 +616,23 @@ public class Character : MonoBehaviour
             Vector3 dir = dodgeDirection;
             p.RegisterPropulsion(dir, m.dodge, EndDodge);
             SwitchDodgeCollider(true);
-        }      
+        }
     }
 
     private void EndDodge()
     {
         SwitchDodgeCollider(false);
         IsDodging = false;
-        if(shouldResetFall)
+        if (shouldResetFall)
             ResetFallProgress();
     }
 
     private void DodgeCooldown()
     {
-        if(!IsDodging && !dodgeCooldownDone)
+        if (!IsDodging && !dodgeCooldownDone)
         {
             dodgeCooldownProgress += Time.deltaTime / m.dodgeCooldown;
-            if(dodgeCooldownProgress >= 1)
+            if (dodgeCooldownProgress >= 1)
             {
                 dodgeCooldownProgress = 1f;
                 dodgeCooldownDone = true;
@@ -648,6 +658,21 @@ public class Character : MonoBehaviour
         else
             lastDir = Mathf.Sign(velocity.x);
         transform.forward = new Vector3(lastDir, 0, 0);
+    }
+
+    #endregion
+
+    #region Death
+
+    public bool IsDead { get; private set; } 
+    public void Die()
+    {
+        if (!IsDead)
+        {
+            visuals.gameObject.SetActive(false);
+            IsDead = true;
+            fb.Play("Death");
+        }
     }
 
     #endregion
