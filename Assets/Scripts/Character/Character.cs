@@ -14,6 +14,9 @@ public class Character : MonoBehaviour
     public Animator visuals;
     public CharacterAnimator animator;
 
+    [Header("Debug")]
+    public bool receiveDebugInput = true;
+    public GameObject hitbox;
     #region State
     private StateMachine<CharacterState> stateMachine;
     public CharacterState CurrentState => stateMachine != null ? stateMachine.State : CharacterState.Grounded;
@@ -66,6 +69,8 @@ public class Character : MonoBehaviour
         CalculateHorizontalAcceleration();
         CalculateHorizontalVelocity();
         OrientModelToDirection();
+        AttackUpdate();
+        p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
 
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
     }
@@ -80,22 +85,33 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Input
+    private bool nullInput => horizontalAxis == 0 && verticalAxis == 0;
+    private bool nullVelocity => body.velocity == Vector3.zero;
+    private Vector3 actionDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
 
     private bool downButton = false;
 
     private void DebugInput()
     {
-        InputHorizontal(Input.GetAxisRaw("Horizontal"));
-        InputVertical(Input.GetAxisRaw("Vertical"));
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (receiveDebugInput)
         {
-            StartJump();
-        }
+            InputHorizontal(Input.GetAxisRaw("Horizontal"));
+            InputVertical(Input.GetAxisRaw("Vertical"));
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ReceiveJumpInput();
+            }
 
-        InputDownButton(Input.GetKey(KeyCode.S));
-        if(Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            Dodge();
+            InputDownButton(Input.GetKey(KeyCode.S));
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                Dodge();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                StartAttack();
+            }
         }
     }
 
@@ -118,8 +134,34 @@ public class Character : MonoBehaviour
 
     #region Movement
 
-    public float CurrentAcceleration => grounded ? m.groundedAcceleration : m.aerialAcceleration;
-    public float CurrentDeceleration => grounded ? m.groundedDeceleration : m.aerialDeceleration;
+    private bool isPropelling => p.IsPropelling;
+
+    public float CurrentAcceleration
+    {
+        get
+        {
+            float accel = grounded ? m.groundedAcceleration : m.aerialAcceleration;
+            if (isPropelling)
+            {
+                accel *= p.Current().airControl;
+            }
+
+            return accel;
+        }
+    }
+
+    public float CurrentDeceleration
+    {
+        get
+        {
+            float decel = grounded ? m.groundedDeceleration : m.aerialDeceleration;
+            if (isPropelling)
+            {
+                decel *= 1;
+            }
+            return decel;
+        }
+    }
 
     private void CalculateHorizontalAcceleration()
     {
@@ -158,8 +200,18 @@ public class Character : MonoBehaviour
 
     private void ApplyVelocity()
     {
-        if (p.IsPropelling) body.velocity = p.Velocity();
-        else body.velocity = velocity;
+        if (p.IsPropelling)
+        {
+            Propulsion current = p.Current();
+            float strength = 1 - current.CurrentStrengthHoriz;
+            //Vector3 horizontal = Vector3.Lerp(p.Velocity(), velocity,  1 -current.CurrentStrengthHoriz);
+            Vector3 horizontal = p.Velocity() + velocity * Mathf.Clamp01(strength);
+            body.velocity = new Vector3(horizontal.x, p.Velocity().y, horizontal.z);
+        }
+        else
+        {
+            body.velocity = velocity;
+        }
     }
 
     #endregion
@@ -170,7 +222,7 @@ public class Character : MonoBehaviour
 
     private void Grounded_Enter()
     {
-        Debug.Log("Enter Ground");
+        //Debug.Log("Enter Ground");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
@@ -186,7 +238,7 @@ public class Character : MonoBehaviour
 
         else
         {
-            if(downButton && walkingOnPassThroughPlatform)
+            if (downButton && walkingOnPassThroughPlatform)
             {
                 CanPassThrough(true);
                 stateMachine.ChangeState(CharacterState.Falling);
@@ -201,11 +253,19 @@ public class Character : MonoBehaviour
     private int jumpLeft = 0;
     private float jumpProgress = 0f;
 
-    public void StartJump()
+    public void ReceiveJumpInput()
     {
-        if (jumpLeft > 0)
+        if (isWallSliding)
         {
-            stateMachine.ChangeState(CharacterState.Jumping);
+            WallJump();
+        }
+
+        else
+        {
+            if (jumpLeft > 0)
+            {
+                stateMachine.ChangeState(CharacterState.Jumping);
+            }
         }
     }
 
@@ -245,15 +305,21 @@ public class Character : MonoBehaviour
     private float yVelocityStartFall = 0f;
     private float fallProgress = 0f;
 
-    private void Falling_Enter()
+    private void ResetFallProgress()
     {
         fallProgress = 0f;
+    }
+
+    private void Falling_Enter()
+    {
+        ResetFallProgress();
         yVelocityStartFall = velocity.y;
+        animator.Falling(true);
     }
 
     private void Falling_Update()
     {
-        if(!p.IsPropelling)
+        if (!p.IsPropelling)
         {
             if (CastGround())
             {
@@ -283,9 +349,13 @@ public class Character : MonoBehaviour
                     stateMachine.ChangeState(CharacterState.Grounded);
                 }
             }
+
             fallProgress += Time.deltaTime / m.timeToReachMaxFall;
             fallProgress = Mathf.Clamp01(fallProgress);
-            float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed, m.fallCurve.Evaluate(fallProgress));
+
+            float mul = downButton ? 2 : 1;
+
+            float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed * mul, m.fallCurve.Evaluate(fallProgress));
             SetVerticalVelocity(fall);
 
             if (CastWall())
@@ -295,13 +365,21 @@ public class Character : MonoBehaviour
         }
     }
 
+    private void Falling_Exit()
+    {
+        animator.Falling(false);
+    }
+
     #endregion
 
     #region WallSliding
 
+    private bool isWallSliding => CurrentState == CharacterState.WallSliding;
     private float wallSlidingProgress = 0f;
+
     private void WallSliding_Enter()
     {
+        animator.WallSliding(true);
         wallSlidingProgress = 0f;
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
@@ -328,21 +406,94 @@ public class Character : MonoBehaviour
         }
     }
 
+    private void WallSliding_Exit()
+    {
+        animator.WallSliding(false);
+    }
+
+    #endregion
+
+    #region WallJump
+
+    private void WallJump()
+    {
+        Vector3 jumpDir = (hitWall.normal + Vector3.up).normalized;
+        p.RegisterPropulsion(jumpDir, m.wallJump);
+        animator.WallJump();
+    }
+
+    #endregion
+
+    #region Attack
+
+    public bool IsAttacking { get; private set; }
+    private bool CanAttack => !IsDodging;
+    private float attackProgress = 0f;
+
+    private void StartAttack()
+    {
+        if (CanAttack)
+        {
+            IsAttacking = true;
+            attackProgress = 0f;
+        }
+    }
+
+    private void AttackUpdate()
+    {
+        hitbox.SetActive(IsAttacking);
+        hitbox.transform.position = AttackOrigin;
+        if (IsAttacking)
+        {
+            hitsAttack = Physics.BoxCastAll(AttackOrigin, AttackBox, actionDirection, Quaternion.identity, m.attackLength);
+
+            if (hitsAttack.Length > 0)
+            {
+                for (int i = 0; i < hitsAttack.Length; i++)
+                {
+                    Character chara;
+                    if (hitsAttack[i].collider.TryGetComponent(out chara))
+                    {
+                        if (chara != this)
+                        {
+                            if (!chara.IsDodging)
+                            {
+                                chara.gameObject.SetActive(false);
+                                Debug.Log("Hit " + chara.gameObject.name);
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            attackProgress += Time.deltaTime / m.attackDuration;
+            if (attackProgress >= 1)
+            {
+                IsAttacking = false;
+            }
+        }
+    }
+
     #endregion
 
     #region Cast
 
     public Vector3 FeetOrigin => transform.position + Vector3.up * m.castGroundOrigin;
     public Vector3 HeadOrigin => transform.position + Vector3.up * m.castCeilingOrigin;
+    public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + actionDirection * m.attackOffset;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
+    public Vector3 AttackBox => new Vector3(m.attackWidth, m.attackWidth, m.attackWidth);
     private RaycastHit hitGround;
     private RaycastHit hitCeiling;
+    private RaycastHit[] hitsAttack;
     private RaycastHit hitWall;
 
     private void DrawBox()
     {
         BoxCastDrawer.DrawBoxCastBox(FeetOrigin, CastBox * m.groundCastRadius, Quaternion.identity, -Vector3.up, m.groundRaycastDown, Color.red);
         BoxCastDrawer.DrawBoxCastBox(HeadOrigin, CastBox * m.groundCastRadius, Quaternion.identity, Vector3.up, m.castCeilingLength, Color.yellow);
+        BoxCastDrawer.DrawBoxCastBox(AttackOrigin, AttackBox, Quaternion.identity, actionDirection, m.attackLength, Color.blue);
     }
 
     public bool CastCeiling()
@@ -392,11 +543,20 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Dodge
+
+    public bool IsDodging { get; private set; }
     public void Dodge()
     {
+        IsDodging = true;
         animator.Dodge();
-        Vector3 dir = new Vector3(horizontalAxis, verticalAxis, 0).normalized;
-        p.RegisterPropulsion(dir, m.dodge);
+        Vector3 dir = actionDirection;
+        p.RegisterPropulsion(dir, m.dodge, EndDodge);
+    }
+
+    private void EndDodge()
+    {
+        IsDodging = false;
+        ResetFallProgress();
     }
 
     #endregion

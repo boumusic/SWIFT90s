@@ -13,6 +13,7 @@ public class CharacterAnimator : MonoBehaviour
     public Action onDeathAnim;
     public Action onDoubleJumpAnim;
     public Action onDodgeAnim;
+    public Action onWallJumpAnim;
 
     public void Run(bool value)
     {
@@ -35,9 +36,9 @@ public class CharacterAnimator : MonoBehaviour
         Bool("isJumping", value);
     }
 
-    public void IsFalling(bool value)
+    public void Falling(bool value)
     {
-        Bool("isFalling", value);
+        Bool("Falling", value);
     }
 
     public void Grounded(bool value)
@@ -84,9 +85,15 @@ public class CharacterAnimator : MonoBehaviour
         onDodgeAnim?.Invoke();
     }
 
-    public void WallClimb(bool climb)
+    public void WallSliding(bool slide)
     {
-        Bool("isWallclimbing", climb);
+        Bool("WallSliding", slide);
+    }
+
+    public void WallJump()
+    {
+        Trigger("WallJump");
+        onWallJumpAnim?.Invoke();
     }
 
     private void Trigger(string name)
