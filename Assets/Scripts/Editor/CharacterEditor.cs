@@ -36,6 +36,7 @@ public class CharacterEditor : Editor
         Label("Velocity", t.Velocity.ToString());
         Label("Body Velocity", t.body.velocity.ToString());
         Label("Horizontal Axis", t.HorizontalAxis.ToString());
+        Label("Is Attacking", t.IsAttacking.ToString());
         Label("Horizontal Acceleration", t.XAccel.ToString());
 
         EditorGUILayout.EndVertical();

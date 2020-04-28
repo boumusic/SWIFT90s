@@ -163,7 +163,7 @@ MonoBehaviour:
   groundRaycastDown: 0.82
   castGroundOrigin: 0.47
   castWallLength: 1
-  castCeilingOrigin: 1.88
+  castCeilingOrigin: 1.48
   castCeilingLength: 0.54
   timeToReachMaxSlide: 0.5
   minWallSlideSpeed: 0.5
@@ -327,3 +327,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  attackDuration: 0.2
+  attackDelay: 0.2
+  attackLength: 0.12
+  attackOrigin: 1
+  attackWidth: 0.5
+  attackOffset: 1.08

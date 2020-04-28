@@ -53,4 +53,12 @@ public class CharacterSettings : ScriptableObject
 
     [Header("WallJump")]
     public Propulsion wallJump;
+
+    [Header("Attack")]
+    public float attackDuration = 1f;
+    public float attackDelay = 0.2f;
+    public float attackLength = 1f;
+    public float attackOrigin = 1f;
+    public float attackWidth = 1f;
+    public float attackOffset = 1f;
 }

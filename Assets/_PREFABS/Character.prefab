@@ -185,6 +185,7 @@ MonoBehaviour:
   p: {fileID: 7340245766873752142}
   visuals: {fileID: 6306332959456251608}
   animator: {fileID: 6942889159288483982}
+  receiveDebugInput: 1
 --- !u!54 &1572720513423746986
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -193,7 +194,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1572720513423746985}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 500
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 0

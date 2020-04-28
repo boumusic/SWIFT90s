@@ -14,6 +14,9 @@ public class Character : MonoBehaviour
     public Animator visuals;
     public CharacterAnimator animator;
 
+    [Header("Debug")]
+    public bool receiveDebugInput = true;
+
     #region State
     private StateMachine<CharacterState> stateMachine;
     public CharacterState CurrentState => stateMachine != null ? stateMachine.State : CharacterState.Grounded;
@@ -66,6 +69,7 @@ public class Character : MonoBehaviour
         CalculateHorizontalAcceleration();
         CalculateHorizontalVelocity();
         OrientModelToDirection();
+        AttackUpdate();
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
 
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
@@ -81,22 +85,33 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Input
+    private bool nullInput => horizontalAxis == 0 && verticalAxis == 0;
+    private bool nullVelocity => body.velocity == Vector3.zero;
+    private Vector3 actionDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
 
     private bool downButton = false;
 
     private void DebugInput()
     {
-        InputHorizontal(Input.GetAxisRaw("Horizontal"));
-        InputVertical(Input.GetAxisRaw("Vertical"));
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (receiveDebugInput)
         {
-            ReceiveJumpInput();
-        }
+            InputHorizontal(Input.GetAxisRaw("Horizontal"));
+            InputVertical(Input.GetAxisRaw("Vertical"));
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ReceiveJumpInput();
+            }
 
-        InputDownButton(Input.GetKey(KeyCode.S));
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            Dodge();
+            InputDownButton(Input.GetKey(KeyCode.S));
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                Dodge();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                StartAttack();
+            }
         }
     }
 
@@ -125,8 +140,8 @@ public class Character : MonoBehaviour
     {
         get
         {
-            float accel = grounded? m.groundedAcceleration: m.aerialAcceleration;
-            if(isPropelling)
+            float accel = grounded ? m.groundedAcceleration : m.aerialAcceleration;
+            if (isPropelling)
             {
                 accel *= p.Current().airControl;
             }
@@ -134,13 +149,13 @@ public class Character : MonoBehaviour
             return accel;
         }
     }
-        
+
     public float CurrentDeceleration
     {
         get
         {
-            float decel = grounded? m.groundedDeceleration: m.aerialDeceleration;
-            if(isPropelling)
+            float decel = grounded ? m.groundedDeceleration : m.aerialDeceleration;
+            if (isPropelling)
             {
                 decel *= 1;
             }
@@ -207,7 +222,7 @@ public class Character : MonoBehaviour
 
     private void Grounded_Enter()
     {
-        Debug.Log("Enter Ground");
+        //Debug.Log("Enter Ground");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
@@ -299,6 +314,7 @@ public class Character : MonoBehaviour
     {
         ResetFallProgress();
         yVelocityStartFall = velocity.y;
+        animator.Falling(true);
     }
 
     private void Falling_Update()
@@ -349,6 +365,11 @@ public class Character : MonoBehaviour
         }
     }
 
+    private void Falling_Exit()
+    {
+        animator.Falling(false);
+    }
+
     #endregion
 
     #region WallSliding
@@ -358,6 +379,7 @@ public class Character : MonoBehaviour
 
     private void WallSliding_Enter()
     {
+        animator.WallSliding(true);
         wallSlidingProgress = 0f;
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
@@ -384,6 +406,11 @@ public class Character : MonoBehaviour
         }
     }
 
+    private void WallSliding_Exit()
+    {
+        animator.WallSliding(false);
+    }
+
     #endregion
 
     #region WallJump
@@ -397,19 +424,69 @@ public class Character : MonoBehaviour
 
     #endregion
 
+    #region Attack
+
+    public bool IsAttacking { get; private set; }
+    private float attackProgress = 0f;
+
+    private void StartAttack()
+    {
+        IsAttacking = true;
+        attackProgress = 0f;
+    }
+
+    private void AttackUpdate()
+    {
+        
+        if (IsAttacking)
+        {
+            hitsAttack = Physics.BoxCastAll(AttackOrigin, AttackBox, actionDirection, Quaternion.identity, m.attackLength);
+
+            if(hitsAttack.Length > 0)
+            {
+                for (int i = 0; i < hitsAttack.Length; i++)
+                {
+                    Debug.Log("Hit " + hitsAttack[i].collider.gameObject.name);
+                    Character chara;
+                    if (hitsAttack[i].collider.TryGetComponent(out chara))
+                    {
+                        if(chara != this)
+                        {
+                            Debug.Log("Hit " + chara.gameObject.name);
+                            chara.gameObject.SetActive(false);
+                        }                       
+                    }
+                }
+                
+            }
+
+            attackProgress += Time.deltaTime / m.attackDuration;
+            if (attackProgress >= 1)
+            {
+                IsAttacking = false;
+            }
+        }
+    }
+
+    #endregion
+
     #region Cast
 
     public Vector3 FeetOrigin => transform.position + Vector3.up * m.castGroundOrigin;
     public Vector3 HeadOrigin => transform.position + Vector3.up * m.castCeilingOrigin;
+    public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + actionDirection * m.attackOffset;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
+    public Vector3 AttackBox => new Vector3(m.attackWidth, m.attackWidth, m.attackWidth);
     private RaycastHit hitGround;
     private RaycastHit hitCeiling;
+    private RaycastHit[] hitsAttack;
     private RaycastHit hitWall;
 
     private void DrawBox()
     {
         BoxCastDrawer.DrawBoxCastBox(FeetOrigin, CastBox * m.groundCastRadius, Quaternion.identity, -Vector3.up, m.groundRaycastDown, Color.red);
         BoxCastDrawer.DrawBoxCastBox(HeadOrigin, CastBox * m.groundCastRadius, Quaternion.identity, Vector3.up, m.castCeilingLength, Color.yellow);
+        BoxCastDrawer.DrawBoxCastBox(AttackOrigin, AttackBox, Quaternion.identity, actionDirection, m.attackLength, Color.blue);
     }
 
     public bool CastCeiling()
@@ -463,7 +540,7 @@ public class Character : MonoBehaviour
     public void Dodge()
     {
         animator.Dodge();
-        Vector3 dir = new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+        Vector3 dir = actionDirection;
         p.RegisterPropulsion(dir, m.dodge, EndDodge);
     }
 

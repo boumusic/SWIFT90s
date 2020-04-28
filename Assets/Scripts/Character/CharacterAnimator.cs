@@ -36,9 +36,9 @@ public class CharacterAnimator : MonoBehaviour
         Bool("isJumping", value);
     }
 
-    public void IsFalling(bool value)
+    public void Falling(bool value)
     {
-        Bool("isFalling", value);
+        Bool("Falling", value);
     }
 
     public void Grounded(bool value)
@@ -85,9 +85,9 @@ public class CharacterAnimator : MonoBehaviour
         onDodgeAnim?.Invoke();
     }
 
-    public void WallClimb(bool climb)
+    public void WallSliding(bool slide)
     {
-        Bool("isWallclimbing", climb);
+        Bool("WallSliding", slide);
     }
 
     public void WallJump()
