@@ -34,7 +34,9 @@ public class Character : MonoBehaviour
     #region Input
 
     private float horizontalAxis = 0;
+    private float verticalAxis = 0;
     public float HorizontalAxis { get => horizontalAxis; }
+    public float VerticalAxis { get => verticalAxis; }
 
     #endregion
 
@@ -84,6 +86,7 @@ public class Character : MonoBehaviour
     private void DebugInput()
     {
         InputHorizontal(Input.GetAxisRaw("Horizontal"));
+        InputVertical(Input.GetAxisRaw("Vertical"));
         if (Input.GetKeyDown(KeyCode.Space))
         {
             StartJump();
@@ -99,6 +102,11 @@ public class Character : MonoBehaviour
     public void InputHorizontal(float horizontal)
     {
         this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
+    }
+
+    public void InputVertical(float vertical)
+    {
+        this.verticalAxis = Mathf.Abs(vertical) < 0.2f ? 0 : Mathf.Sign(vertical);
     }
 
     public void InputDownButton(bool down)
@@ -384,14 +392,10 @@ public class Character : MonoBehaviour
     #endregion
 
     #region Dodge
-    private Vector3 mousePos => Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    public Vector3 mouseDir => (mousePos - transform.position).normalized;
     public void Dodge()
     {
-        Debug.Log(mousePos);
-        GameObject.Find("SUCE").transform.position = mousePos;
         animator.Dodge();
-        Vector3 dir = mouseDir;
+        Vector3 dir = new Vector3(horizontalAxis, verticalAxis, 0).normalized;
         p.RegisterPropulsion(dir, m.dodge);
     }
 
