@@ -17,6 +17,9 @@ public class Character : MonoBehaviour
     public Collider defaultCollider;
     public GameObject dodgeCollider;
 
+    [Header("VFX")]
+    public ParticleSystem wallSlideFx;
+
     [Header("Debug")]
     public bool receiveDebugInput = true;
     public bool drawAttackHitbox;
@@ -229,6 +232,7 @@ public class Character : MonoBehaviour
     private void Grounded_Enter()
     {
         //Debug.Log("Enter Ground");
+        fb.Play("Land");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
@@ -391,6 +395,7 @@ public class Character : MonoBehaviour
         wallSlidingProgress = 0f;
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
+        wallSlideFx.Play();
     }
 
     private void WallSliding_Update()
@@ -417,6 +422,7 @@ public class Character : MonoBehaviour
     private void WallSliding_Exit()
     {
         animator.WallSliding(false);
+        wallSlideFx.Stop();
     }
 
     #endregion
