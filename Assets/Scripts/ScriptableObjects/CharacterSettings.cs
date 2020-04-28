@@ -61,4 +61,5 @@ public class CharacterSettings : ScriptableObject
     public float attackOrigin = 1f;
     public float attackWidth = 1f;
     public float attackOffset = 1f;
+    public Propulsion attackImpulse;
 }
