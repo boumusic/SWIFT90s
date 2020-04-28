@@ -22,6 +22,7 @@ public class CharacterSettings : ScriptableObject
     public float timeToReachMaxFall = 4f;
     public float maxFallSpeed = 20;
     public AnimationCurve fallCurve;
+    public float downButtonFallSpeedMultiplier = 2f;
 
     [Header("Pass through Platform")]
     public int defaultLayer;
@@ -49,4 +50,7 @@ public class CharacterSettings : ScriptableObject
     public float minWallSlideSpeed = 4f;
     public float maxWallSlideSpeed = 4f;
     public AnimationCurve slideCurve;
+
+    [Header("WallJump")]
+    public Propulsion wallJump;
 }

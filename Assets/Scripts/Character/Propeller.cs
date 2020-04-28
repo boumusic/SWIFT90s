@@ -11,12 +11,15 @@ public class Propulsion
     public float duration = 1f;
     public float airControl = 0f;
     public Vector3 direction = Vector3.one;
-    public int priority = 0;    
+    public int priority = 0;
     public bool separateAxes = false;
     public float strengthHoriz = 5f;
     public AnimationCurve curveHoriz;
     public float strengthVerti = 5f;
     public AnimationCurve curveVerti;
+
+    public float CurrentStrengthHoriz => separateAxes ? curveHoriz.Evaluate(progress) : curve.Evaluate(progress);
+    public float CurrentStrengthVerti => separateAxes ? curveVerti.Evaluate(progress) : curve.Evaluate(progress);
 
     private Vector3 chosenDir;
     private float progress = 0f;
@@ -55,6 +58,7 @@ public class Propulsion
         started = true;
     }
 
+    Vector2 axis => propeller.Axis;
     public void Update()
     {
         if (started)
@@ -67,7 +71,7 @@ public class Propulsion
                     float x = chosenDir.x * strengthHoriz * curveHoriz.Evaluate(progress);
                     float y = chosenDir.y * strengthVerti * curveVerti.Evaluate(progress);
                     float z = chosenDir.z * strengthHoriz * curveHoriz.Evaluate(progress);
-                    vector = new Vector3(x,y,z);
+                    vector = new Vector3(x, y, z);
                 }
                 else
                 {
@@ -90,6 +94,8 @@ public class Propulsion
 public class Propeller : MonoBehaviour
 {
     public List<Propulsion> propulsions = new List<Propulsion>();
+    private Vector2 axis;
+    public Vector2 Axis => axis;
 
     private void Update()
     {
@@ -98,7 +104,7 @@ public class Propeller : MonoBehaviour
             propulsions[i].Update();
         }
     }
-    
+
     public void RegisterPropulsion(Propulsion propulsion, Action action = null)
     {
         RegisterPropulsion(Vector3.zero, propulsion, action);
@@ -107,7 +113,7 @@ public class Propeller : MonoBehaviour
     public void RegisterPropulsion(Vector3 dir, Propulsion propulsion, Action action = null)
     {
         Propulsion copy = new Propulsion(propulsion);
-        
+
         propulsions.Add(copy);
         copy.Start(dir, action, this);
     }
@@ -118,6 +124,11 @@ public class Propeller : MonoBehaviour
         propulsions.Remove(propulsion);
     }
 
+    public void FeedInputs(Vector2 axis)
+    {
+        this.axis = axis;
+    }
+
     public void Clear()
     {
         propulsions.Clear();
@@ -125,9 +136,16 @@ public class Propeller : MonoBehaviour
 
     public Vector3 Velocity()
     {
+        if (Current() != null)
+            return Current().Vector;
+        else return Vector3.zero;
+    }
+
+    public Propulsion Current()
+    {
         if (propulsions.Count == 0)
         {
-            return Vector3.zero;
+            return null;
         }
 
         else
@@ -140,9 +158,9 @@ public class Propeller : MonoBehaviour
                     propulsion = propulsions[i];
                 }
             }
-            //Debug.Log(propulsion.Vector);
-            return propulsion.Vector;
+            return propulsion;
         }
     }
+
     public bool IsPropelling => propulsions.Count > 0;
 }
