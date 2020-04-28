@@ -77,7 +77,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   posSmoothness: 0.07
   minZ: 5
-  maxZ: 30
+  maxZ: 60
   maxPlayerDistance: 35
 --- !u!1 &4430181479361662705
 GameObject:
@@ -224,4 +224,10 @@ MonoBehaviour:
   m_BeforeStackBundles: []
   m_AfterStackBundles:
   - assemblyQualifiedName: Chromab, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - assemblyQualifiedName: PixelPorridge, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - assemblyQualifiedName: RandomGlitchPP, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  - assemblyQualifiedName: SineDistortPP, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
