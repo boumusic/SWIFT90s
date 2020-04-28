@@ -31,6 +31,7 @@ public class CharacterSettings : ScriptableObject
 
     [Header("Dodge")]
     public Propulsion dodge;
+    public float dodgeCooldown = 1f;
 
     [Header("Cast")]
     public LayerMask groundMask;
@@ -57,6 +58,7 @@ public class CharacterSettings : ScriptableObject
     [Header("Attack")]
     public float attackDuration = 1f;
     public float attackDelay = 0.2f;
+    public float attackCooldown = 0.5f;
     public float attackLength = 1f;
     public float attackOrigin = 1f;
     public float attackWidth = 1f;

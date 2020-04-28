@@ -155,6 +155,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  dodgeCooldown: 0.2
   groundMask:
     serializedVersion: 2
     m_Bits: 1536
@@ -329,12 +330,13 @@ MonoBehaviour:
       m_RotationOrder: 4
   attackDuration: 0.2
   attackDelay: 0.2
+  attackCooldown: 0.3
   attackLength: 0.95
   attackOrigin: 0.92
   attackWidth: 0.13
   attackOffset: 0.72
   attackImpulse:
-    strength: 10
+    strength: 20
     curve:
       serializedVersion: 2
       m_Curve:
@@ -358,16 +360,16 @@ MonoBehaviour:
         outWeight: 0.23721
       - serializedVersion: 3
         time: 0.27995592
-        value: 0.21822041
+        value: 0.23805684
         inSlope: -5.3335032
-        outSlope: -0.86926484
+        outSlope: -0.47078323
         tangentMode: 1
         weightedMode: 0
         inWeight: 0.60649765
-        outWeight: 0.12078105
+        outWeight: 0.113626756
       - serializedVersion: 3
         time: 0.9984222
-        value: 0.019846829
+        value: 0.13932315
         inSlope: -0.07682467
         outSlope: -0.07682467
         tangentMode: 0
@@ -377,7 +379,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.4
+    duration: 0.2
     airControl: 0
     direction: {x: 0, y: 0, z: 0}
     priority: 0
