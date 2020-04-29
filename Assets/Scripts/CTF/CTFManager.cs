@@ -17,10 +17,17 @@ public class CTFManager : MonoBehaviour
     public int seconds = 0;
     public int goalPoints = 3;
 
+    private bool reachedHalfTime = false;
+
     private Timer timer;
     public Timer Timer => timer;
 
     private void Start()
+    {
+        StartTimer();
+    }
+
+    private void StartTimer()
     {
         timer = new Timer(minutes, seconds, TimerOver);
         timer.Start();
@@ -33,6 +40,15 @@ public class CTFManager : MonoBehaviour
 
     private void TimerOver()
     {
+        if(reachedHalfTime)
+        {
+            //Game over
+        }
+
+        else
+        {
+
+        }
         Debug.Log("Time is up !");
     }
 
