@@ -709,7 +709,11 @@ namespace Mirror
                 }
                 if (LogFilter.Debug) Debug.Log("NetworkManager created singleton (DontDestroyOnLoad)");
                 singleton = this;
-                if (Application.isPlaying) DontDestroyOnLoad(gameObject);
+                if (Application.isPlaying)
+                {
+                    transform.parent = null;
+                    DontDestroyOnLoad(gameObject);
+                }
             }
             else
             {
@@ -1289,7 +1293,7 @@ namespace Mirror
         /// <para>The default implementation for this function creates a new player object from the playerPrefab.</para>
         /// </summary>
         /// <param name="conn">Connection from client.</param>
-        public virtual void OnServerAddPlayer(NetworkConnection conn)
+        public virtual GameObject OnServerAddPlayer(NetworkConnection conn)
         {
             int teamIndex = (conn.connectionId % 2 == 0) ? 0 : 1;
 
@@ -1298,9 +1302,9 @@ namespace Mirror
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
 
-            player.GetComponent<NetworkedPlayer>().teamIndex = teamIndex;
-
             NetworkServer.AddPlayerForConnection(conn, player);
+
+            return player;
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace Mirror.Examples.Pong
         public Transform rightRacketSpawn;
         GameObject ball;
 
-        public override void OnServerAddPlayer(NetworkConnection conn)
+        public override GameObject OnServerAddPlayer(NetworkConnection conn)
         {
             // add player at correct spawn position
             Transform start = numPlayers == 0 ? leftRacketSpawn : rightRacketSpawn;
@@ -25,6 +25,8 @@ namespace Mirror.Examples.Pong
                 ball = Instantiate(spawnPrefabs.Find(prefab => prefab.name == "Ball"));
                 NetworkServer.Spawn(ball);
             }
+
+            return null;
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
