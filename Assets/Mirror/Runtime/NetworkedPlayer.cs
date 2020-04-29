@@ -5,10 +5,12 @@ using Mirror;
 
 public class NetworkedPlayer : NetworkBehaviour
 {
+    [SyncVar]
+    public int teamIndex;
+
     public Character character;
     public string PlayerName => character.PlayerName;
-    public int TeamIndex { get; private set; }
-    public Team Team => TeamManager.Instance.teams[TeamIndex];
+    public Team Team => TeamManager.Instance.teams[teamIndex];
 
     private void Start()
     {
@@ -25,6 +27,6 @@ public class NetworkedPlayer : NetworkBehaviour
             UIManager.Instance.AssignPlayer(this);
         }
 
-        TeamIndex = TeamManager.Instance.JoinSmallestTeam(this);
+        TeamManager.Instance.JoinTeam(teamIndex, this);
     }
 }

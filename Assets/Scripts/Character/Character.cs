@@ -695,7 +695,7 @@ public class Character : MonoBehaviour
     #region Team
 
     public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
-    public int TeamIndex => player.TeamIndex;
+    public int TeamIndex => player.teamIndex;
 
     public string PlayerName => "KRUSHER98";
 
