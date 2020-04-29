@@ -43,5 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcc5ae172b20aeb46a4768f2eaec525b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teamColor0: {r: 0.8962264, g: 0.09974117, b: 0, a: 1}
-  teamColor1: {r: 0.10849059, g: 0.5292755, b: 1, a: 1}
+  teams: []
+  colors:
+  - {r: 1, g: 0.1462264, b: 0.1462264, a: 1}
+  - {r: 0.0990566, g: 0.23235863, b: 1, a: 1}

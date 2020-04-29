@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8478407f92610243b62bee8d5b1e9d1, type: 3}
   m_Name: CharacterSettings
   m_EditorClassIdentifier: 
-  runSpeed: 10
+  runSpeed: 5
   groundedAcceleration: 10
   groundedDeceleration: 1.5
   jumpCount: 2
-  jumpStrength: 21
+  jumpStrength: 15
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -158,7 +158,7 @@ MonoBehaviour:
   dodgeCooldown: 0.2
   groundMask:
     serializedVersion: 2
-    m_Bits: 1536
+    m_Bits: 1537
   groundCastRadius: 1
   castBoxWidth: 0.24
   groundRaycastDown: 0.82

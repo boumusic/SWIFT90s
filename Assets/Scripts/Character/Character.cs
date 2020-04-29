@@ -7,16 +7,21 @@ public class Character : MonoBehaviour
 {
     #region Fields
 
-    [Header("Components")]
+    [Header("Gameplay")]
     public Rigidbody body;
     public CharacterSettings m;
     public Propeller p;
-    public Animator visuals;
-    public CharacterAnimator animator;
-    public CharacterFeedbacks fb;
     public Collider defaultCollider;
     public GameObject dodgeCollider;
 
+    [Header("Visuals")]
+    public CharacterAnimator animator;
+    public Animator visuals;
+    public CharacterFeedbacks fb;
+    public Texture2D[] characterTextures;
+    public Flag flagVisuals;
+    public Renderer[] rends;
+    
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
 
@@ -64,6 +69,11 @@ public class Character : MonoBehaviour
         stateMachine.ManualUpdate = true;
         stateMachine.ChangeState(CharacterState.Falling);
         ResetJumpCount();
+
+
+        flagVisuals.Initialize(1 - TeamIndex);
+        UpdateFlagVisuals();
+        UpdateTexture();
     }
 
     private void FixedUpdate()
@@ -550,7 +560,7 @@ public class Character : MonoBehaviour
 
     public bool CastCeiling()
     {
-        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.groundMask))
+        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.groundMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -559,7 +569,7 @@ public class Character : MonoBehaviour
 
     public bool CastGround()
     {
-        if (Physics.BoxCast(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, out hitGround, Quaternion.identity, m.groundRaycastDown, m.groundMask))
+        if (Physics.BoxCast(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, out hitGround, Quaternion.identity, m.groundRaycastDown, m.groundMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -658,6 +668,48 @@ public class Character : MonoBehaviour
         else
             lastDir = Mathf.Sign(velocity.x);
         transform.forward = new Vector3(lastDir, 0, 0);
+    }
+
+    private void UpdateFlagVisuals()
+    {
+        flagVisuals.gameObject.SetActive(HasFlag);
+    }
+
+    #endregion
+
+    #region Team
+
+    public Color TeamColor => Color.red;
+    public int TeamIndex => 0;
+
+    public string PlayerName => "KRUSHER99";
+
+    private void UpdateTexture()
+    {
+        Material mat = new Material(rends[0].material);
+        mat.SetTexture("_MainTex", characterTextures[TeamIndex]);
+        for (int i = 0; i < rends.Length; i++)
+        {
+            rends[i].sharedMaterial = mat;
+        }
+    }
+
+    #endregion
+
+    #region Flag
+
+    public bool HasFlag  { get; private set; }
+
+    public void CaptureFlag()
+    {
+        HasFlag = true;
+        UpdateFlagVisuals();
+    }
+
+    public void Score()
+    {
+        HasFlag = false;
+        UpdateFlagVisuals();
     }
 
     #endregion
