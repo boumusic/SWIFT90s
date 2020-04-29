@@ -1147,6 +1147,11 @@ PrefabInstance:
       propertyPath: teamIndex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9139095854317864561, guid: e1f8b3cdbf7694e4d927c77233fef26a,
+        type: 3}
+      propertyPath: sceneId
+      value: 978686831
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1f8b3cdbf7694e4d927c77233fef26a, type: 3}
 --- !u!1 &928632236
@@ -1228,6 +1233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lan: 0
   dontDestroyOnLoad: 1
   runInBackground: 1
   startOnHeadless: 1
@@ -2506,6 +2512,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shrine
       objectReference: {fileID: 0}
+    - target: {fileID: 7163630046251045375, guid: 846c338e194b52c468fb846bfd41f0b0,
+        type: 3}
+      propertyPath: sceneId
+      value: 2737608107
+      objectReference: {fileID: 0}
     - target: {fileID: 7717231270277600794, guid: 846c338e194b52c468fb846bfd41f0b0,
         type: 3}
       propertyPath: teamIndex
@@ -2675,6 +2686,11 @@ PrefabInstance:
         type: 3}
       propertyPath: teamIndex
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9139095854317864561, guid: e1f8b3cdbf7694e4d927c77233fef26a,
+        type: 3}
+      propertyPath: sceneId
+      value: 1315836996
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1f8b3cdbf7694e4d927c77233fef26a, type: 3}
