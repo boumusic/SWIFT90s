@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
+using TMPro;
 
 public class Character : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class Character : MonoBehaviour
     public Texture2D[] characterTextures;
     public Flag flagVisuals;
     public Renderer[] rends;
+    public TextMeshPro textName;
     
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
@@ -74,6 +76,7 @@ public class Character : MonoBehaviour
         flagVisuals.Initialize(1 - TeamIndex);
         UpdateFlagVisuals();
         UpdateTexture();
+        UpdateTextName();
     }
 
     private void FixedUpdate()
@@ -521,6 +524,7 @@ public class Character : MonoBehaviour
     {
         if(!chara.IsDead)
         {
+            UIManager.Instance.DisplayKillFeed(this, chara);
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
@@ -675,6 +679,11 @@ public class Character : MonoBehaviour
         flagVisuals.gameObject.SetActive(HasFlag);
     }
 
+    private void UpdateTextName()
+    {
+        textName.text = PlayerName;
+    }
+
     #endregion
 
     #region Team
@@ -682,7 +691,7 @@ public class Character : MonoBehaviour
     public Color TeamColor => Color.red;
     public int TeamIndex => 0;
 
-    public string PlayerName => "KRUSHER99";
+    public string PlayerName => "KRUSHER98";
 
     private void UpdateTexture()
     {
