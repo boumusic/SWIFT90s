@@ -27,7 +27,6 @@ public class UIManager : MonoBehaviour
 
     [Header("Components")]
     public Canvas canvas;
-    public Animator hitMarker;
     public UIGeneralMessage generalMessage;
     //public UIScoreboard scoreboard;
 
@@ -39,26 +38,19 @@ public class UIManager : MonoBehaviour
 
     private List<UIKillFeed> killFeeds = new List<UIKillFeed>();
 
-    //[Header("Jauges")]
-    //public UIJauge wallJauge;
-    //public UIJauge dashJauge;
+    [Header("Half Time")]
+    public HalfTime halfTime;
+    public float halfTimeMessageDuration = 3;
 
     [Header("Pause")]
     public GameObject pause;
     private bool isPaused = false;
     public bool IsPaused => isPaused;
 
-    [Header("Flag Status")]
-    public GameObject flagStatus;
-
     [Header("UI FlagZone")]
     public GameObject uiFlagZonePrefab;
-    //private List<Zone> flagZones = new List<Zone>();
-
-    [Header("Debug")]
-    public TextMeshProUGUI sensText;
-    public TextMeshProUGUI flowText;
-
+    private List<LevelZone> flagZones = new List<LevelZone>();
+    
     private void Start()
     {
        //AssignPlayer(FindObjectOfType<NetworkedPlayer>());
@@ -67,20 +59,6 @@ public class UIManager : MonoBehaviour
     public void AssignPlayer(NetworkedPlayer p)
     {
         player = p;
-        if (player)
-        {
-            //dashJauge.Init(ref character.OnStartDash, ref character.OnDashReady);
-            //wallJauge.Init(ref character.OnStartWallclimb, ref character.OnWallclimbReady);
-
-
-            /*
-            //arg
-            foreach (var item in FindObjectsOfType<UI360>())
-            {
-                item.AssignPlayer();
-            }
-            */
-        }
     }
 
     private void Update()
@@ -88,16 +66,10 @@ public class UIManager : MonoBehaviour
         if (player == null) return;
 
         PositionKillFeeds();
-        UpdateCooldowns();
 
         //scoreboard.gameObject.SetActive(player.Tab);
         //sensText.text = "sensitivity : " + player.sensitivity.ToString("F3") + "/1";
         //flowText.text = "Flow : " + player.Character.CurrentFlow.ToString("F2") + "/200";
-    }
-
-    public void HitMarker()
-    {
-        hitMarker.SetTrigger("In");
     }
 
     public void LogMessage(string message)
@@ -107,15 +79,18 @@ public class UIManager : MonoBehaviour
         generalMessage.Message(message);
     }
 
-    public void UpdateCooldowns()
+    public void DisplayHalftimeMessage()
     {
-        if (player)
-        {
-            //dashJauge.UpdateJauge(player.Character.DashCooldownProgress);
-            //wallJauge.UpdateJauge(player.Character.WallClimbCharge);
-        }
+        halfTime.In();
+        StartCoroutine(HalfTimeDuration());
     }
 
+    private IEnumerator HalfTimeDuration()
+    {
+        yield return new WaitForSeconds(halfTimeMessageDuration);
+        halfTime.Out();
+    }
+    
     /*
     public void RegisterFlagZone(Zone zone)
     {
