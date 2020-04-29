@@ -52,6 +52,11 @@ public class UIManager : MonoBehaviour
     
     [Header("Game over")]
     public GameOver gameOver;
+
+    [Header("Portraits")]
+    public GameObject portraitPrefab;
+    public Transform portraitParent;
+    private List<PlayerPortrait> portraits = new List<PlayerPortrait>();
     
     private void Start()
     {
@@ -97,6 +102,31 @@ public class UIManager : MonoBehaviour
     {
         yield return new WaitForSeconds(halfTimeMessageDuration);
         halfTime.Out();
+    }
+
+    public void RefreshPortraits()
+    {
+        Debug.Log("Refresh");
+        for (int i = 0; i < portraits.Count; i++)
+        {
+            Destroy(portraits[i]);
+        }
+
+        portraits.Clear();
+
+        TeamManager tm = TeamManager.Instance;
+        int index = 0;
+        for (int t = 0; t < tm.teams.Count; t++)
+        {
+            for (int p = 0; p < tm.teams[t].players.Count; p++)
+            {
+                GameObject newPortrait = Instantiate(portraitPrefab, portraitParent);
+                PlayerPortrait portrait = newPortrait.GetComponent<PlayerPortrait>();
+                portraits.Add(portrait);
+                portrait.rect.anchoredPosition = Vector3.zero +Vector3.right *  index * 300;
+                index++;
+            }
+        }
     }
     
     /*

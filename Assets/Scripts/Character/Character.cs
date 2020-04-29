@@ -17,7 +17,7 @@ public class Character : MonoBehaviour
 
     [Header("Visuals")]
     public CharacterAnimator animator;
-    public Animator visuals;
+    public GameObject visuals;
     public CharacterFeedbacks fb;
     public Texture2D[] characterTextures;
     public Flag flagVisuals;
