@@ -62,10 +62,16 @@ public class CTFManager : MonoBehaviour
 
     }
 
+    public void TeamWins(Team team)
+    {
+        GameOver();
+    }
+
     private void GameOver()
     {
         //Game over
         //Spawn l'écran de victoire/défaite
+        UIManager.Instance.DisplayEndgameScreen();
     }
 
     private void StartHalfTime()
@@ -128,5 +134,6 @@ public class CTFManager : MonoBehaviour
                 (zones[i] as Altar).Enable(true);
             }
         }
+
     }
 }
