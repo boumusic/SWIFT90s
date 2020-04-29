@@ -1291,13 +1291,14 @@ namespace Mirror
         /// <param name="conn">Connection from client.</param>
         public virtual void OnServerAddPlayer(NetworkConnection conn)
         {
-            Debug.Log(conn.connectionId);
-            Debug.Log((conn.connectionId % 2 == 0) ? 0 : 1);
-            Transform startPos = GetStartPosition((conn.connectionId % 2 == 0) ? 0 : 1);
+            int teamIndex = (conn.connectionId % 2 == 0) ? 0 : 1;
+
+            Transform startPos = GetStartPosition(teamIndex);
             GameObject player = startPos != null
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
 
+            player.GetComponent<NetworkedPlayer>().teamIndex = teamIndex;
 
             NetworkServer.AddPlayerForConnection(conn, player);
         }
