@@ -17,7 +17,7 @@ public class Character : MonoBehaviour
 
     [Header("Visuals")]
     public CharacterAnimator animator;
-    public Animator visuals;
+    public GameObject visuals;
     public CharacterFeedbacks fb;
     public Texture2D[] characterTextures;
     public Flag flagVisuals;
@@ -478,6 +478,7 @@ public class Character : MonoBehaviour
             attackCooldownDone = false;
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
+            animator.Attack();
         }
     }
 
@@ -531,10 +532,15 @@ public class Character : MonoBehaviour
     {
         if (!chara.IsDead)
         {
+            if(chara.HasFlag)
+            {
+                UIManager.Instance.LogMessage(PlayerName + " retrieved the flag from " + chara.PlayerName);
+            }
             UIManager.Instance.DisplayKillFeed(this, chara);
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
+
             //Debug.Log("Hit " + chara.gameObject.name);
         }
     }
@@ -696,7 +702,7 @@ public class Character : MonoBehaviour
     #region Team
 
     public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
-    public int TeamIndex => player.TeamIndex;
+    public int TeamIndex => player.teamIndex;
 
     public string PlayerName => "KRUSHER98";
 

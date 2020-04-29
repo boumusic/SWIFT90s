@@ -155,7 +155,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  dodgeCooldown: 0.2
+  dodgeCooldown: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 1537
