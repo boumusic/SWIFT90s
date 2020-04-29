@@ -17,7 +17,7 @@ public class Character : MonoBehaviour
 
     [Header("Visuals")]
     public CharacterAnimator animator;
-    public Animator visuals;
+    public GameObject visuals;
     public CharacterFeedbacks fb;
     public Texture2D[] characterTextures;
     public Flag flagVisuals;
@@ -29,7 +29,7 @@ public class Character : MonoBehaviour
     public ParticleSystem wallSlideFx;
 
     [Header("Debug")]
-    public bool receiveDebugInput = true;
+    private bool receiveDebugInput = false;
     public bool drawAttackHitbox;
     public bool drawMovementHitbox;
 
@@ -151,6 +151,7 @@ public class Character : MonoBehaviour
     public void InputVertical(float vertical)
     {
         this.verticalAxis = Mathf.Abs(vertical) < 0.2f ? 0 : Mathf.Sign(vertical);
+        InputDownButton(vertical < 0f);
     }
 
     public void InputDownButton(bool down)
@@ -462,7 +463,7 @@ public class Character : MonoBehaviour
     private Vector3 attackDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private Vector3 lastAttackDirection;
     public bool IsAttacking { get; private set; }
-    private bool CanAttack => !IsDodging && attackCooldownDone;
+    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag;
     private float attackProgress = 0f;
     private float attackCooldownProgress = 0f;
     private bool attackCooldownDone = true;
@@ -477,6 +478,7 @@ public class Character : MonoBehaviour
             attackCooldownDone = false;
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
+            animator.Attack();
         }
     }
 
@@ -530,10 +532,15 @@ public class Character : MonoBehaviour
     {
         if (!chara.IsDead)
         {
+            if(chara.HasFlag)
+            {
+                UIManager.Instance.LogMessage(PlayerName + " retrieved the flag from " + chara.PlayerName);
+            }
             UIManager.Instance.DisplayKillFeed(this, chara);
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
+
             //Debug.Log("Hit " + chara.gameObject.name);
         }
     }
@@ -721,7 +728,7 @@ public class Character : MonoBehaviour
         UpdateFlagVisuals();
     }
 
-    public void Score()
+    public void DropFlag()
     {
         HasFlag = false;
         UpdateFlagVisuals();

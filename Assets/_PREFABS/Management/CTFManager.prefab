@@ -46,3 +46,4 @@ MonoBehaviour:
   minutes: 2
   seconds: 30
   goalPoints: 3
+  halfTimeDuration: 2
