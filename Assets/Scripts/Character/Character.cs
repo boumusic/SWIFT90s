@@ -13,10 +13,18 @@ public class Character : MonoBehaviour
     public Propeller p;
     public Animator visuals;
     public CharacterAnimator animator;
+    public CharacterFeedbacks fb;
+    public Collider defaultCollider;
+    public GameObject dodgeCollider;
+
+    [Header("VFX")]
+    public ParticleSystem wallSlideFx;
 
     [Header("Debug")]
     public bool receiveDebugInput = true;
-    public GameObject hitbox;
+    public bool drawAttackHitbox;
+    public bool drawMovementHitbox;
+
     #region State
     private StateMachine<CharacterState> stateMachine;
     public CharacterState CurrentState => stateMachine != null ? stateMachine.State : CharacterState.Grounded;
@@ -51,6 +59,7 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
+        SwitchDodgeCollider(false);
         stateMachine = StateMachine<CharacterState>.Initialize(this);
         stateMachine.ManualUpdate = true;
         stateMachine.ChangeState(CharacterState.Falling);
@@ -70,6 +79,7 @@ public class Character : MonoBehaviour
         CalculateHorizontalVelocity();
         OrientModelToDirection();
         AttackUpdate();
+        DodgeCooldown();
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
 
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
@@ -87,7 +97,6 @@ public class Character : MonoBehaviour
     #region Input
     private bool nullInput => horizontalAxis == 0 && verticalAxis == 0;
     private bool nullVelocity => body.velocity == Vector3.zero;
-    private Vector3 actionDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
 
     private bool downButton = false;
 
@@ -205,7 +214,7 @@ public class Character : MonoBehaviour
             Propulsion current = p.Current();
             float strength = 1 - current.CurrentStrengthHoriz;
             //Vector3 horizontal = Vector3.Lerp(p.Velocity(), velocity,  1 -current.CurrentStrengthHoriz);
-            Vector3 horizontal = p.Velocity() + velocity * Mathf.Clamp01(strength);
+            Vector3 horizontal = p.Velocity() + velocity * Mathf.Clamp01(strength) * current.airControl;
             body.velocity = new Vector3(horizontal.x, p.Velocity().y, horizontal.z);
         }
         else
@@ -223,6 +232,7 @@ public class Character : MonoBehaviour
     private void Grounded_Enter()
     {
         //Debug.Log("Enter Ground");
+        fb.Play("Land");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
@@ -376,13 +386,16 @@ public class Character : MonoBehaviour
 
     private bool isWallSliding => CurrentState == CharacterState.WallSliding;
     private float wallSlidingProgress = 0f;
+    private float initialVelocity;
 
     private void WallSliding_Enter()
     {
+        initialVelocity = body.velocity.y;
         animator.WallSliding(true);
         wallSlidingProgress = 0f;
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
+        wallSlideFx.Play();
     }
 
     private void WallSliding_Update()
@@ -390,7 +403,7 @@ public class Character : MonoBehaviour
         wallSlidingProgress += Time.deltaTime / m.timeToReachMaxSlide;
         wallSlidingProgress = Mathf.Clamp01(wallSlidingProgress);
 
-        float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
+        float slide = Mathf.Lerp(initialVelocity, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
         SetVerticalVelocity(slide);
         SetHorizontalVelocity(0);
 
@@ -409,6 +422,7 @@ public class Character : MonoBehaviour
     private void WallSliding_Exit()
     {
         animator.WallSliding(false);
+        wallSlideFx.Stop();
     }
 
     #endregion
@@ -426,26 +440,32 @@ public class Character : MonoBehaviour
 
     #region Attack
 
+    private Vector3 attackDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+    private Vector3 lastAttackDirection;
     public bool IsAttacking { get; private set; }
-    private bool CanAttack => !IsDodging;
+    private bool CanAttack => !IsDodging && attackCooldownDone;
     private float attackProgress = 0f;
+    private float attackCooldownProgress = 0f;
+    private bool attackCooldownDone = true;
 
-    private void StartAttack()
+    public void StartAttack()
     {
         if (CanAttack)
         {
+            lastAttackDirection = attackDirection;
             IsAttacking = true;
             attackProgress = 0f;
+            attackCooldownDone = false;
+            attackCooldownProgress = 0f;
+            p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
         }
     }
 
     private void AttackUpdate()
     {
-        hitbox.SetActive(IsAttacking);
-        hitbox.transform.position = AttackOrigin;
         if (IsAttacking)
         {
-            hitsAttack = Physics.BoxCastAll(AttackOrigin, AttackBox, actionDirection, Quaternion.identity, m.attackLength);
+            hitsAttack = Physics.BoxCastAll(AttackOrigin, AttackBox, lastAttackDirection, Quaternion.identity, m.attackLength);
 
             if (hitsAttack.Length > 0)
             {
@@ -458,8 +478,7 @@ public class Character : MonoBehaviour
                         {
                             if (!chara.IsDodging)
                             {
-                                chara.gameObject.SetActive(false);
-                                Debug.Log("Hit " + chara.gameObject.name);
+                                Kill(chara);
                             }
                         }
                     }
@@ -473,6 +492,30 @@ public class Character : MonoBehaviour
                 IsAttacking = false;
             }
         }
+
+        else
+        {
+            if (!attackCooldownDone)
+            {
+                attackCooldownProgress += Time.deltaTime / m.attackCooldown;
+                if (attackCooldownProgress >= 1f)
+                {
+                    attackCooldownProgress = 1f;
+                    attackCooldownDone = true;
+                }
+            }
+        }
+    }
+
+    private void Kill(Character chara)
+    {
+        if(!chara.IsDead)
+        {
+            chara.Die();
+            //chara.gameObject.SetActive(false);
+            fb.Play("Kill");
+            Debug.Log("Hit " + chara.gameObject.name);
+        }        
     }
 
     #endregion
@@ -481,7 +524,7 @@ public class Character : MonoBehaviour
 
     public Vector3 FeetOrigin => transform.position + Vector3.up * m.castGroundOrigin;
     public Vector3 HeadOrigin => transform.position + Vector3.up * m.castCeilingOrigin;
-    public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + actionDirection * m.attackOffset;
+    public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + (IsAttacking ? lastAttackDirection : attackDirection) * m.attackOffset;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
     public Vector3 AttackBox => new Vector3(m.attackWidth, m.attackWidth, m.attackWidth);
     private RaycastHit hitGround;
@@ -491,9 +534,18 @@ public class Character : MonoBehaviour
 
     private void DrawBox()
     {
-        BoxCastDrawer.DrawBoxCastBox(FeetOrigin, CastBox * m.groundCastRadius, Quaternion.identity, -Vector3.up, m.groundRaycastDown, Color.red);
-        BoxCastDrawer.DrawBoxCastBox(HeadOrigin, CastBox * m.groundCastRadius, Quaternion.identity, Vector3.up, m.castCeilingLength, Color.yellow);
-        BoxCastDrawer.DrawBoxCastBox(AttackOrigin, AttackBox, Quaternion.identity, actionDirection, m.attackLength, Color.blue);
+        if (drawMovementHitbox)
+        {
+            BoxCastDrawer.DrawBoxCastBox(FeetOrigin, CastBox * m.groundCastRadius, Quaternion.identity, -Vector3.up, m.groundRaycastDown, Color.red);
+            BoxCastDrawer.DrawBoxCastBox(HeadOrigin, CastBox * m.groundCastRadius, Quaternion.identity, Vector3.up, m.castCeilingLength, Color.yellow);
+        }
+
+        if (drawAttackHitbox)
+        {
+            Color col = IsAttacking ? Color.cyan : Color.blue;
+            Vector3 dir = IsAttacking ? lastAttackDirection : attackDirection;
+            BoxCastDrawer.DrawBoxCastBox(AttackOrigin, AttackBox, Quaternion.identity, dir, m.attackLength, col);
+        }
     }
 
     public bool CastCeiling()
@@ -544,19 +596,54 @@ public class Character : MonoBehaviour
 
     #region Dodge
 
+    private Vector3 dodgeDirection => nullInput ? transform.forward : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+    private bool dodgeCooldownDone = true;
+    private float dodgeCooldownProgress = 0f;
+    private bool canDodge => dodgeCooldownDone && !IsAttacking;
+
     public bool IsDodging { get; private set; }
+    private bool shouldResetFall = false;
+
     public void Dodge()
     {
-        IsDodging = true;
-        animator.Dodge();
-        Vector3 dir = actionDirection;
-        p.RegisterPropulsion(dir, m.dodge, EndDodge);
+        if (canDodge)
+        {
+            dodgeCooldownDone = false;
+            dodgeCooldownProgress = 0f;
+            if (verticalAxis >= 0) shouldResetFall = true;
+            IsDodging = true;
+            animator.Dodge();
+            Vector3 dir = dodgeDirection;
+            p.RegisterPropulsion(dir, m.dodge, EndDodge);
+            SwitchDodgeCollider(true);
+        }
     }
 
     private void EndDodge()
     {
+        SwitchDodgeCollider(false);
         IsDodging = false;
-        ResetFallProgress();
+        if (shouldResetFall)
+            ResetFallProgress();
+    }
+
+    private void DodgeCooldown()
+    {
+        if (!IsDodging && !dodgeCooldownDone)
+        {
+            dodgeCooldownProgress += Time.deltaTime / m.dodgeCooldown;
+            if (dodgeCooldownProgress >= 1)
+            {
+                dodgeCooldownProgress = 1f;
+                dodgeCooldownDone = true;
+            }
+        }
+    }
+
+    private void SwitchDodgeCollider(bool dodging)
+    {
+        defaultCollider.enabled = !dodging;
+        dodgeCollider.SetActive(dodging);
     }
 
     #endregion
@@ -571,6 +658,21 @@ public class Character : MonoBehaviour
         else
             lastDir = Mathf.Sign(velocity.x);
         transform.forward = new Vector3(lastDir, 0, 0);
+    }
+
+    #endregion
+
+    #region Death
+
+    public bool IsDead { get; private set; } 
+    public void Die()
+    {
+        if (!IsDead)
+        {
+            visuals.gameObject.SetActive(false);
+            IsDead = true;
+            fb.Play("Death");
+        }
     }
 
     #endregion
