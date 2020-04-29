@@ -34,7 +34,7 @@ public class Team
         if (!players.Contains(player))
         {
             players.Add(player);
-            Debug.Log(player.PlayerName + " joined team " + index);
+            //Debug.Log(player.PlayerName + " joined team " + index);
         }
     }
 

@@ -524,7 +524,7 @@ public class Character : MonoBehaviour
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
-            Debug.Log("Hit " + chara.gameObject.name);
+            //Debug.Log("Hit " + chara.gameObject.name);
         }        
     }
 

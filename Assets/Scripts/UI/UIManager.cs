@@ -27,7 +27,6 @@ public class UIManager : MonoBehaviour
 
     [Header("Components")]
     public Canvas canvas;
-    public Animator hitMarker;
     public UIGeneralMessage generalMessage;
     //public UIScoreboard scoreboard;
 
@@ -93,11 +92,6 @@ public class UIManager : MonoBehaviour
         //scoreboard.gameObject.SetActive(player.Tab);
         //sensText.text = "sensitivity : " + player.sensitivity.ToString("F3") + "/1";
         //flowText.text = "Flow : " + player.Character.CurrentFlow.ToString("F2") + "/200";
-    }
-
-    public void HitMarker()
-    {
-        hitMarker.SetTrigger("In");
     }
 
     public void LogMessage(string message)
