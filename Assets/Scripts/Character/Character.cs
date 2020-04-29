@@ -531,10 +531,15 @@ public class Character : MonoBehaviour
     {
         if (!chara.IsDead)
         {
+            if(chara.HasFlag)
+            {
+                UIManager.Instance.LogMessage(PlayerName + " retrieved the flag from " + chara.PlayerName);
+            }
             UIManager.Instance.DisplayKillFeed(this, chara);
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
+
             //Debug.Log("Hit " + chara.gameObject.name);
         }
     }
