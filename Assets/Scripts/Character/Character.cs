@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
+using TMPro;
 
 public class Character : MonoBehaviour
 {
@@ -21,7 +22,9 @@ public class Character : MonoBehaviour
     public Texture2D[] characterTextures;
     public Flag flagVisuals;
     public Renderer[] rends;
-    
+    public TextMeshPro textName;
+    private NetworkedPlayer player;
+
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
 
@@ -64,6 +67,11 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
+    }
+
+    public void Initialize(NetworkedPlayer player)
+    {
+        this.player = player;
         SwitchDodgeCollider(false);
         stateMachine = StateMachine<CharacterState>.Initialize(this);
         stateMachine.ManualUpdate = true;
@@ -74,6 +82,7 @@ public class Character : MonoBehaviour
         flagVisuals.Initialize(1 - TeamIndex);
         UpdateFlagVisuals();
         UpdateTexture();
+        UpdateTextName();
     }
 
     private void FixedUpdate()
@@ -519,13 +528,14 @@ public class Character : MonoBehaviour
 
     private void Kill(Character chara)
     {
-        if(!chara.IsDead)
+        if (!chara.IsDead)
         {
+            UIManager.Instance.DisplayKillFeed(this, chara);
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
             //Debug.Log("Hit " + chara.gameObject.name);
-        }        
+        }
     }
 
     #endregion
@@ -675,14 +685,19 @@ public class Character : MonoBehaviour
         flagVisuals.gameObject.SetActive(HasFlag);
     }
 
+    private void UpdateTextName()
+    {
+        textName.text = PlayerName;
+    }
+
     #endregion
 
     #region Team
 
-    public Color TeamColor => Color.red;
-    public int TeamIndex => 0;
+    public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
+    public int TeamIndex => player.TeamIndex;
 
-    public string PlayerName => "KRUSHER99";
+    public string PlayerName => "KRUSHER98";
 
     private void UpdateTexture()
     {
@@ -698,7 +713,7 @@ public class Character : MonoBehaviour
 
     #region Flag
 
-    public bool HasFlag  { get; private set; }
+    public bool HasFlag { get; private set; }
 
     public void CaptureFlag()
     {
@@ -716,7 +731,7 @@ public class Character : MonoBehaviour
 
     #region Death
 
-    public bool IsDead { get; private set; } 
+    public bool IsDead { get; private set; }
     public void Die()
     {
         if (!IsDead)

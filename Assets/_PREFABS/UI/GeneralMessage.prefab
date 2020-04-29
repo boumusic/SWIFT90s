@@ -138,8 +138,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: KRUSHER99 CAPTURED THE FLAG
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1b40d3a8186cf6f44b772e83e4e83321, type: 2}
+  m_sharedMaterial: {fileID: 6033043741865684567, guid: 1b40d3a8186cf6f44b772e83e4e83321,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -164,15 +165,15 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 56
+  m_fontSize: 83.3
   m_fontSizeBase: 83.3
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 90.3
-  m_fontStyle: 1
+  m_fontSizeMax: 88.35
+  m_fontStyle: 0
   m_textAlignment: 514
-  m_characterSpacing: 45.51
+  m_characterSpacing: 4
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

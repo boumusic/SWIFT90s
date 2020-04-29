@@ -17,6 +17,7 @@ public class CTFManager : MonoBehaviour
     public int seconds = 0;
     public int goalPoints = 3;
 
+    public float halfTimeDuration = 5f;
     private bool reachedHalfTime = false;
 
     private Timer timer;
@@ -38,18 +39,68 @@ public class CTFManager : MonoBehaviour
         timer.Update();
     }
 
+    private bool isDraw = false;
+
     private void TimerOver()
     {
-        if(reachedHalfTime)
+        if (reachedHalfTime)
         {
-            //Game over
+            if (!isDraw)
+            {
+                GameOver();
+            }
+            else
+            {
+                // Trigger boolean d'overtime, le prochain flag est décisif
+            }
         }
 
         else
         {
-
+            StartHalfTime();
         }
-        Debug.Log("Time is up !");
+
+    }
+
+    public void TeamWins(Team team)
+    {
+        GameOver();
+    }
+
+    private void GameOver()
+    {
+        //Game over
+        //Spawn l'écran de victoire/défaite
+        UIManager.Instance.DisplayEndgameScreen();
+    }
+
+    private void StartHalfTime()
+    {
+        reachedHalfTime = true;
+
+        //Spawn l'écran de halftime
+        UIManager.Instance.DisplayHalftimeMessage();
+
+        //Disable les Inputs
+        //Reset les flags
+        //Inverser les spawns
+        //Reset les positions des joueurs à leurs nouveaux spawns
+        StartCoroutine(HalfTime());
+    }
+
+    private IEnumerator HalfTime()
+    {
+        yield return new WaitForSeconds(halfTimeDuration);
+        //Enable les Inputs
+        StartTimer();
+    }
+
+    private void InvertAllZones()
+    {
+        for (int i = 0; i < zones.Count; i++)
+        {
+            zones[i].teamIndex = 1 - zones[i].teamIndex;
+        }
     }
 
     public void RegisterZone(LevelZone zone)
@@ -66,7 +117,7 @@ public class CTFManager : MonoBehaviour
     {
         for (int i = 0; i < zones.Count; i++)
         {
-            if(zones[i] is Altar && zones[i].teamIndex == teamIndex)
+            if (zones[i] is Altar && zones[i].teamIndex == teamIndex)
             {
                 (zones[i] as Altar).Enable(false);
             }
@@ -83,5 +134,6 @@ public class CTFManager : MonoBehaviour
                 (zones[i] as Altar).Enable(true);
             }
         }
+
     }
 }

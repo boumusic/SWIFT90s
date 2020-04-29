@@ -156,6 +156,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rend: {fileID: 6956544183733455387}
+  textures:
+  - {fileID: 2800000, guid: 0b5de26bc4a5b9342b26a7ade475e112, type: 3}
+  - {fileID: 2800000, guid: f89c62779cfdd184f8035054dd94d2e7, type: 3}
 --- !u!1 &6956544183733455385
 GameObject:
   m_ObjectHideFlags: 0
