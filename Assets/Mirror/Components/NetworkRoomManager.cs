@@ -159,7 +159,7 @@ namespace Mirror
             if (gamePlayer == null)
             {
                 // get start position from base class
-                Transform startPos = GetStartPosition();
+                Transform startPos = GetStartPosition((conn.connectionId % 2 == 0) ? 0 : 1);
                 gamePlayer = startPos != null
                     ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                     : Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);

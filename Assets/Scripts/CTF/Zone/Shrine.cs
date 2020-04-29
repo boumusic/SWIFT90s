@@ -10,7 +10,7 @@ public class Shrine : LevelZone
         if(character.HasFlag && character.TeamIndex == teamIndex)
         {
             TeamManager.Instance.Score(teamIndex);
-            character.Score();
+            character.DropFlag();
             CTFManager.Instance.ScoredFlagOfTeam(1 - character.TeamIndex);
         }
     }

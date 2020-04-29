@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Mirror;
+
+
 public class LevelZone : MonoBehaviour
 {
     [Header("Components")]
@@ -16,11 +19,19 @@ public class LevelZone : MonoBehaviour
         Gizmos.color = teamIndex == 0 ? Color.red : Color.cyan;
         Gizmos.DrawWireSphere(transform.position, radius);
         UpdateRadius();
+
+        NetworkStartPosition startPos = GetComponent<NetworkStartPosition>();
+        if (!startPos) return;
+        startPos.team = teamIndex;
     }
 
     private void Awake()
     {
         UpdateRadius();
+
+        NetworkStartPosition startPos = GetComponent<NetworkStartPosition>();
+        if (!startPos) return;
+        startPos.team = teamIndex;
     }
 
     private void OnEnable()

@@ -62,10 +62,18 @@ public class CTFManager : MonoBehaviour
 
     }
 
+    public void TeamWins(Team team)
+    {
+        GameOver();
+    }
+
     private void GameOver()
     {
         //Game over
         //Spawn l'écran de victoire/défaite
+        UIManager.Instance.DisplayEndgameScreen();
+
+        TeamManager.Instance.ToggleInputs(false);
     }
 
     private void StartHalfTime()
@@ -76,6 +84,8 @@ public class CTFManager : MonoBehaviour
         UIManager.Instance.DisplayHalftimeMessage();
 
         //Disable les Inputs
+        TeamManager.Instance.ToggleInputs(false);
+
         //Reset les flags
         //Inverser les spawns
         //Reset les positions des joueurs à leurs nouveaux spawns
@@ -85,7 +95,10 @@ public class CTFManager : MonoBehaviour
     private IEnumerator HalfTime()
     {
         yield return new WaitForSeconds(halfTimeDuration);
+
         //Enable les Inputs
+        TeamManager.Instance.ToggleInputs(true);
+
         StartTimer();
     }
 
@@ -128,5 +141,6 @@ public class CTFManager : MonoBehaviour
                 (zones[i] as Altar).Enable(true);
             }
         }
+
     }
 }

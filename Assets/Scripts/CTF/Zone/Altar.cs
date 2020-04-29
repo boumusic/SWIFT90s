@@ -30,6 +30,7 @@ public class Altar : LevelZone
     public void ResetFlag()
     {
         captured = false;
+        UpdateFlag();
     }
 
     public void Enable(bool enable)
