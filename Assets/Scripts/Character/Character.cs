@@ -478,6 +478,7 @@ public class Character : MonoBehaviour
             attackCooldownDone = false;
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
+            animator.Attack();
         }
     }
 
