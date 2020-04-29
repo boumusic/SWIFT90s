@@ -6,6 +6,7 @@ using Mirror;
 public class NetworkedPlayer : NetworkBehaviour
 {
     public Character character;
+    public string PlayerName => character.PlayerName;
 
     private void Start()
     {
@@ -15,5 +16,7 @@ public class NetworkedPlayer : NetworkBehaviour
 
             GetComponent<Rigidbody>().isKinematic = true;
         }
+
+        TeamManager.Instance.JoinSmallestTeam(this);
     }
 }
