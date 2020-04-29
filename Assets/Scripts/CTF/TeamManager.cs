@@ -48,6 +48,14 @@ public class Team
             Debug.Log(player.PlayerName + " left team " + index);
         }
     }
+
+    public void ToggleInputs(bool on)
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].ToggleInputs(on);
+        }
+    }
 }
 
 public class TeamManager : MonoBehaviour
@@ -110,6 +118,14 @@ public class TeamManager : MonoBehaviour
         if (teams.Count > i)
             return teams[i].Score;
         return 0;
+    }
+
+    public void ToggleInputs(bool on)
+    {
+        for (int i = 0; i < teams.Count; i++)
+        {
+            teams[i].ToggleInputs(on);
+        }
     }
 
     public void Score(int i)
