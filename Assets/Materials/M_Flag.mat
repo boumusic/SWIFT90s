@@ -33,11 +33,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Cutoff: 0.98
-    - _Emissive: 0
+    - _Emissive: 1.5
     - _Framerate: 7.65
-    - _Freq: 5
+    - _Freq: 10
     - _Speed: 6
     - _Strength: 1
     - __dirty: 0
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0, g: 0.17319551, b: 0.7529412, a: 1}

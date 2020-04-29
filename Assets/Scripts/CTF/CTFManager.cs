@@ -10,6 +10,8 @@ public class CTFManager : MonoBehaviour
         get { if (!instance) instance = FindObjectOfType<CTFManager>(); return instance; }
     }
 
+    private List<LevelZone> zones = new List<LevelZone>();
+
     [Header("Gameplay Rules")]
     public int minutes = 5;
     public int seconds = 0;
@@ -32,5 +34,38 @@ public class CTFManager : MonoBehaviour
     private void TimerOver()
     {
         Debug.Log("Time is up !");
+    }
+
+    public void RegisterZone(LevelZone zone)
+    {
+        zones.Add(zone);
+    }
+
+    public void UnregisterZone(LevelZone zone)
+    {
+        zones.Remove(zone);
+    }
+
+    public void CapturedFlagOfTeam(int teamIndex)
+    {
+        for (int i = 0; i < zones.Count; i++)
+        {
+            if(zones[i] is Altar && zones[i].teamIndex == teamIndex)
+            {
+                (zones[i] as Altar).Enable(false);
+            }
+        }
+    }
+
+    public void ScoredFlagOfTeam(int teamIndex)
+    {
+        for (int i = 0; i < zones.Count; i++)
+        {
+            if (zones[i] is Altar && zones[i].teamIndex == teamIndex)
+            {
+                (zones[i] as Altar).ResetFlag();
+                (zones[i] as Altar).Enable(true);
+            }
+        }
     }
 }
