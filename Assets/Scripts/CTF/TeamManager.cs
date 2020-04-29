@@ -11,6 +11,7 @@ public class Team
     public Color Color { get => color; }
     public int Score { get => score; set => score = value; }
 
+    public bool HasWon { get; private set; }
     private int score;
     private Color color;
 
@@ -19,7 +20,8 @@ public class Team
         score += point;
         if (score >= CTFManager.Instance.goalPoints)
         {
-            //CTFManager.Instance.TeamWins(this);
+            HasWon = true;
+            CTFManager.Instance.TeamWins(this);
         }
     }
 
@@ -44,6 +46,14 @@ public class Team
         {
             players.Remove(player);
             Debug.Log(player.PlayerName + " left team " + index);
+        }
+    }
+
+    public void ToggleInputs(bool on)
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].ToggleInputs(on);
         }
     }
 }
@@ -91,9 +101,11 @@ public class TeamManager : MonoBehaviour
         }
     }
 
-    public void JoinSmallestTeam(NetworkedPlayer player)
+    public int JoinSmallestTeam(NetworkedPlayer player)
     {
-        SmallestTeam()?.Join(player);
+        int index = SmallestTeamIndex();
+        teams[index]?.Join(player);
+        return index;
     }
 
     public void JoinTeam(int i, NetworkedPlayer player)
@@ -106,6 +118,14 @@ public class TeamManager : MonoBehaviour
         if (teams.Count > i)
             return teams[i].Score;
         return 0;
+    }
+
+    public void ToggleInputs(bool on)
+    {
+        for (int i = 0; i < teams.Count; i++)
+        {
+            teams[i].ToggleInputs(on);
+        }
     }
 
     public void Score(int i)
@@ -141,22 +161,14 @@ public class TeamManager : MonoBehaviour
         return Color.white;
     }
 
-    private Team SmallestTeam()
+    private int SmallestTeamIndex()
     {
-        Team smallest = null;
+        int smallest = 0;
         for (int i = 0; i < teams.Count; i++)
         {
-            if (smallest != null)
+            if (teams[i].PlayerCount < teams[smallest].PlayerCount)
             {
-                if (teams[i].PlayerCount < smallest.PlayerCount)
-                {
-                    smallest = teams[i];
-                }
-            }
-
-            else
-            {
-                smallest = teams[i];
+                smallest = i;
             }
         }
 
