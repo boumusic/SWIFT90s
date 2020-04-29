@@ -24,6 +24,7 @@ namespace Mirror
     [HelpURL("https://mirror-networking.com/docs/Components/NetworkManager.html")]
     public class NetworkManager : MonoBehaviour
     {
+        public bool lan;
         /// <summary>
         /// A flag to control whether the NetworkManager object is destroyed when the scene changes.
         /// <para>This should be set if your game has a single NetworkManager that exists for the lifetime of the process. If there is a NetworkManager in each scene, then this should not be set.</para>
@@ -399,7 +400,7 @@ namespace Mirror
             }
             if (LogFilter.Debug) Debug.Log("NetworkManager StartClient address:" + networkAddress);
 
-            NetworkClient.Connect(networkAddress);
+            NetworkClient.Connect(lan ? "localhost" : networkAddress);
 
             OnStartClient();
         }
@@ -771,7 +772,8 @@ namespace Mirror
             if (singleton == null)
                 return;
 
-            startPositions.Clear();
+            startPosition0 = null;
+            startPosition1 = null;
             startPositionIndex = 0;
             clientReadyConnection = null;
 
@@ -833,7 +835,8 @@ namespace Mirror
             NetworkServer.SendToAll(new SceneMessage { sceneName = newSceneName });
 
             startPositionIndex = 0;
-            startPositions.Clear();
+            startPosition0 = null;
+            startPosition1 = null;
         }
 
         // This is only set in ClientChangeScene below...never on server.
@@ -1075,35 +1078,8 @@ namespace Mirror
         /// <summary>
         /// List of transforms populted by NetworkStartPosition components found in the scene.
         /// </summary>
-        public static List<Transform> startPositions = new List<Transform>();
-
-        /// <summary>
-        /// Registers the transform of a game object as a player spawn location.
-        /// <para>This is done automatically by NetworkStartPosition components, but can be done manually from user script code.</para>
-        /// </summary>
-        /// <param name="start">Transform to register.</param>
-        public static void RegisterStartPosition(Transform start)
-        {
-            if (LogFilter.Debug) Debug.Log("RegisterStartPosition: (" + start.gameObject.name + ") " + start.position);
-            startPositions.Add(start);
-
-            // reorder the list so that round-robin spawning uses the start positions
-            // in hierarchy order.  This assumes all objects with NetworkStartPosition
-            // component are siblings, either in the scene root or together as children
-            // under a single parent in the scene.
-            startPositions = startPositions.OrderBy(transform => transform.GetSiblingIndex()).ToList();
-        }
-
-        /// <summary>
-        /// Unregisters the transform of a game object as a player spawn location.
-        /// <para>This is done automatically by the <see cref="NetworkStartPosition">NetworkStartPosition</see> component, but can be done manually from user code.</para>
-        /// </summary>
-        /// <param name="start">Transform to unregister.</param>
-        public static void UnRegisterStartPosition(Transform start)
-        {
-            if (LogFilter.Debug) Debug.Log("UnRegisterStartPosition: (" + start.gameObject.name + ") " + start.position);
-            startPositions.Remove(start);
-        }
+        public static Transform startPosition0;
+        public static Transform startPosition1;
 
         #endregion
 
@@ -1315,10 +1291,13 @@ namespace Mirror
         /// <param name="conn">Connection from client.</param>
         public virtual void OnServerAddPlayer(NetworkConnection conn)
         {
-            Transform startPos = GetStartPosition();
+            Debug.Log(conn.connectionId);
+            Debug.Log((conn.connectionId % 2 == 0) ? 0 : 1);
+            Transform startPos = GetStartPosition((conn.connectionId % 2 == 0) ? 0 : 1);
             GameObject player = startPos != null
                 ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                 : Instantiate(playerPrefab);
+
 
             NetworkServer.AddPlayerForConnection(conn, player);
         }
@@ -1328,24 +1307,9 @@ namespace Mirror
         /// <para>This is used by the default implementation of OnServerAddPlayer.</para>
         /// </summary>
         /// <returns>Returns the transform to spawn a player at, or null.</returns>
-        public Transform GetStartPosition()
+        public Transform GetStartPosition(int team)
         {
-            // first remove any dead transforms
-            startPositions.RemoveAll(t => t == null);
-
-            if (startPositions.Count == 0)
-                return null;
-
-            if (playerSpawnMethod == PlayerSpawnMethod.Random)
-            {
-                return startPositions[UnityEngine.Random.Range(0, startPositions.Count)];
-            }
-            else
-            {
-                Transform startPosition = startPositions[startPositionIndex];
-                startPositionIndex = (startPositionIndex + 1) % startPositions.Count;
-                return startPosition;
-            }
+            return team == 0 ? startPosition0 : startPosition1;
         }
 
         /// <summary>
