@@ -11,6 +11,7 @@ public class Team
     public Color Color { get => color; }
     public int Score { get => score; set => score = value; }
 
+    public bool HasWon { get; private set; }
     private int score;
     private Color color;
 
@@ -19,7 +20,8 @@ public class Team
         score += point;
         if (score >= CTFManager.Instance.goalPoints)
         {
-            //CTFManager.Instance.TeamWins(this);
+            HasWon = true;
+            CTFManager.Instance.TeamWins(this);
         }
     }
 
@@ -91,9 +93,11 @@ public class TeamManager : MonoBehaviour
         }
     }
 
-    public void JoinSmallestTeam(NetworkedPlayer player)
+    public int JoinSmallestTeam(NetworkedPlayer player)
     {
-        SmallestTeam()?.Join(player);
+        int index = SmallestTeamIndex();
+        teams[index]?.Join(player);
+        return index;
     }
 
     public void JoinTeam(int i, NetworkedPlayer player)
@@ -141,22 +145,14 @@ public class TeamManager : MonoBehaviour
         return Color.white;
     }
 
-    private Team SmallestTeam()
+    private int SmallestTeamIndex()
     {
-        Team smallest = null;
+        int smallest = 0;
         for (int i = 0; i < teams.Count; i++)
         {
-            if (smallest != null)
+            if (teams[i].PlayerCount < teams[smallest].PlayerCount)
             {
-                if (teams[i].PlayerCount < smallest.PlayerCount)
-                {
-                    smallest = teams[i];
-                }
-            }
-
-            else
-            {
-                smallest = teams[i];
+                smallest = i;
             }
         }
 

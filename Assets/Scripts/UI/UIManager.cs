@@ -20,8 +20,7 @@ public class UIManager : MonoBehaviour
 
     private NetworkedPlayer player;
     public NetworkedPlayer Player { get { if (!player) player = FindObjectOfType<NetworkedPlayer>(); return player; } }
-
-    public NetworkedPlayer NetworkedPlayer => Player.GetComponentInParent<NetworkedPlayer>();
+    
 
     private Character character => player == null ? null : player.character;
 
@@ -50,6 +49,9 @@ public class UIManager : MonoBehaviour
     [Header("UI FlagZone")]
     public GameObject uiFlagZonePrefab;
     private List<LevelZone> flagZones = new List<LevelZone>();
+    
+    [Header("Game over")]
+    public GameOver gameOver;
     
     private void Start()
     {
@@ -83,6 +85,12 @@ public class UIManager : MonoBehaviour
     {
         halfTime.In();
         StartCoroutine(HalfTimeDuration());
+    }
+
+    public void DisplayEndgameScreen()
+    {
+        bool won = Player.Team.HasWon;
+        gameOver.DisplayGameOver(won);
     }
 
     private IEnumerator HalfTimeDuration()

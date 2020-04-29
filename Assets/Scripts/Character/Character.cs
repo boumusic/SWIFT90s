@@ -23,7 +23,8 @@ public class Character : MonoBehaviour
     public Flag flagVisuals;
     public Renderer[] rends;
     public TextMeshPro textName;
-    
+    private NetworkedPlayer player;
+
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
 
@@ -66,6 +67,11 @@ public class Character : MonoBehaviour
 
     private void Awake()
     {
+    }
+
+    public void Initialize(NetworkedPlayer player)
+    {
+        this.player = player;
         SwitchDodgeCollider(false);
         stateMachine = StateMachine<CharacterState>.Initialize(this);
         stateMachine.ManualUpdate = true;
@@ -522,14 +528,14 @@ public class Character : MonoBehaviour
 
     private void Kill(Character chara)
     {
-        if(!chara.IsDead)
+        if (!chara.IsDead)
         {
             UIManager.Instance.DisplayKillFeed(this, chara);
             chara.Die();
             //chara.gameObject.SetActive(false);
             fb.Play("Kill");
             //Debug.Log("Hit " + chara.gameObject.name);
-        }        
+        }
     }
 
     #endregion
@@ -688,8 +694,8 @@ public class Character : MonoBehaviour
 
     #region Team
 
-    public Color TeamColor => Color.red;
-    public int TeamIndex => 0;
+    public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
+    public int TeamIndex => player.TeamIndex;
 
     public string PlayerName => "KRUSHER98";
 
@@ -707,7 +713,7 @@ public class Character : MonoBehaviour
 
     #region Flag
 
-    public bool HasFlag  { get; private set; }
+    public bool HasFlag { get; private set; }
 
     public void CaptureFlag()
     {
@@ -725,7 +731,7 @@ public class Character : MonoBehaviour
 
     #region Death
 
-    public bool IsDead { get; private set; } 
+    public bool IsDead { get; private set; }
     public void Die()
     {
         if (!IsDead)

@@ -482,6 +482,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CTFManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6583085752695383269, guid: 827c284ec89d50049bfd648f13e4ca3a,
+        type: 3}
+      propertyPath: goalPoints
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6687089043916709115, guid: 827c284ec89d50049bfd648f13e4ca3a,
         type: 3}
       propertyPath: m_LocalPosition.x

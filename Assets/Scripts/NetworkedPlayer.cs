@@ -7,9 +7,12 @@ public class NetworkedPlayer : NetworkBehaviour
 {
     public Character character;
     public string PlayerName => character.PlayerName;
+    public int TeamIndex { get; private set; }
+    public Team Team => TeamManager.Instance.teams[TeamIndex];
 
     private void Start()
     {
+        character.Initialize(this);
         if (!hasAuthority)
         {
             character.enabled = false;
@@ -17,6 +20,11 @@ public class NetworkedPlayer : NetworkBehaviour
             GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        TeamManager.Instance.JoinSmallestTeam(this);
+        else
+        {
+            UIManager.Instance.AssignPlayer(this);
+        }
+
+        TeamIndex = TeamManager.Instance.JoinSmallestTeam(this);
     }
 }
