@@ -60,6 +60,9 @@ public class UIManager : MonoBehaviour
     public GameObject portraitPrefab;
     public Transform portraitParent;
     private List<PlayerPortrait> portraits = new List<PlayerPortrait>();
+
+    [Header("Counter")]
+    public PlayerCounterUI counterUi;
     
     private void Start()
     {
@@ -99,6 +102,18 @@ public class UIManager : MonoBehaviour
     {
         bool won = Player.Team.HasWon;
         gameOver.DisplayGameOver(won);
+
+        AudioManager AM = AudioManager.instance;
+
+        if(won)
+        {
+            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Victory);
+        }
+
+        else
+        {
+            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Defeat);
+        }
     }
 
     private IEnumerator HalfTimeDuration()
@@ -168,7 +183,11 @@ public class UIManager : MonoBehaviour
         Cursor.visible = isPaused;
         Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
     }
-    
+
+    public void UpdatePlayerCounterUI(int currentPlayerCount, int maxPlayerCount)
+    {
+        counterUi.UpdateUI(currentPlayerCount, maxPlayerCount);
+    }
 
     #region KillFeed
 

@@ -29,9 +29,12 @@ public class AudioManager : MonoBehaviour
 
     [Header("Audioclips - Music")]
     public AudioClip AC_MenuTheme, AC_BattleTheme, AC_EndTheme;
-    
-    
-   
+
+
+    private void Start()
+    {
+        PlayMusic(AC_BattleTheme, 0.7f);
+    }
 
 
     public void PlaySound(AudioSource audiosource, AudioClip audioclip)

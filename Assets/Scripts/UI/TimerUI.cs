@@ -9,6 +9,6 @@ public class TimerUI : MonoBehaviour
 
     private void Update()
     {
-        text.text = CTFManager.Instance.Timer.GetTimeLeftString();
+        text.text = CTFManager.Instance.Timer?.GetTimeLeftString();
     }
 }

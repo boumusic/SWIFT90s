@@ -106,6 +106,13 @@ public class Character : MonoBehaviour
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
 
         flagBearerFx.SetActive(HasFlag);
+
+#if UNITY_EDITOR
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            Die();
+        }
+#endif        
     }
 
     private void OnDrawGizmos()
@@ -532,9 +539,11 @@ public class Character : MonoBehaviour
                     {
                         if (chara != this && chara.TeamIndex != TeamIndex)
                         {
-                            if (!chara.IsDodging)
+                            if (!chara.IsDodging && !IsDead)
                             {
-                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());
+                                AudioManager.instance.PlaySound(AudioManager.instance.AS_Fight, AudioManager.instance.AC_Hit);
+                                AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Kill);
+                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());                                
                             }
                         }
                     }
@@ -801,6 +810,7 @@ public class Character : MonoBehaviour
             IsDead = true;
             fb.Play("Death");
             DropFlag();
+            AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Death);
         }
     }
 

@@ -17,7 +17,7 @@ public class NetworkedPlayer : NetworkBehaviour
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode attackKey = KeyCode.Mouse0;
     public KeyCode dodgeKey = KeyCode.Mouse1;
-    private bool inputEnabled = true;
+    private bool inputEnabled => TeamManager.Instance.InputEnabled;
 
     Vector3 spawnPoint;
 
@@ -54,16 +54,7 @@ public class NetworkedPlayer : NetworkBehaviour
 
         Inputs();
     }
-
-    public void ToggleInputs(bool on)
-    {
-        inputEnabled = on;
-        if (!on)
-        {
-            character.InputHorizontal(0);
-            character.InputVertical(0);
-        }
-    }
+    
 
     private void Inputs()
     {
@@ -99,6 +90,7 @@ public class NetworkedPlayer : NetworkBehaviour
     [Command]
     public void CmdKillPlayer(NetworkIdentity killerID, NetworkIdentity victimID)
     {
+        Debug.Log(victimID);
         RpcKillPlayer(killerID, victimID);
     }
 
