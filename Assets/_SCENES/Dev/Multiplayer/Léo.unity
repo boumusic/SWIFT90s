@@ -7762,6 +7762,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ESSENTIALS
       objectReference: {fileID: 0}
+    - target: {fileID: 3408004051503652126, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: teams.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6945832414565111299, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -7780,6 +7785,11 @@ PrefabInstance:
     - target: {fileID: 6945832414565111299, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: m_textInfo.pageCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7959922905249195885, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: lan
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8601656686446787012, guid: fe885c7988dba0b4787a4363457a571e,

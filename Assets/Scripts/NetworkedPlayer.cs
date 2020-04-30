@@ -27,6 +27,7 @@ public class NetworkedPlayer : NetworkBehaviour
         if (!hasAuthority)
         {
             character.enabled = false;
+            character.UpdateTexture();
 
             GetComponent<Rigidbody>().isKinematic = true;
         }
