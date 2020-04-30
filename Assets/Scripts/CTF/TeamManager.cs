@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -60,17 +61,14 @@ public class Team
     }
 }
 
-public class TeamManager : MonoBehaviour
+public class TeamManager : NetworkBehaviour
 {
     private static TeamManager instance;
     public static TeamManager Instance
     {
-        get
-        {
-            if (!instance) instance = FindObjectOfType<TeamManager>();
-            return instance;
-        }
+        get { return instance; }
     }
+
 
     public static int TeamCount = 2;
     public List<Team> teams = new List<Team>();
@@ -100,6 +98,7 @@ public class TeamManager : MonoBehaviour
 
     public bool InputEnabled { get; private set; }
 
+
     public int GetIndex(NetworkedPlayer player)
     {
         for (int i = 0; i < teams.Count; i++)
@@ -113,10 +112,15 @@ public class TeamManager : MonoBehaviour
         return 0;
     }
 
-    private void Awake()
+    public void Awake()
     {
-        InputEnabled = true;
+        instance = this;
         InitializeTeams();
+    }
+
+    private void OnEnable()
+    {
+        ToggleInputs(false);
     }
 
     private void InitializeTeams()
