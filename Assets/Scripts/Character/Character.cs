@@ -71,6 +71,7 @@ public class Character : MonoBehaviour
     {
     }
 
+    private float initialZ;
     public void Initialize(NetworkedPlayer player)
     {
         this.player = player;
@@ -84,6 +85,7 @@ public class Character : MonoBehaviour
         UpdateFlagVisuals();
         UpdateTexture();
         UpdateTextName();
+        initialZ = body.position.z;
     }
 
     private void FixedUpdate()
@@ -103,7 +105,9 @@ public class Character : MonoBehaviour
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
         WallJumpUpdate();
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
+        body.position = new Vector3(body.position.x, body.position.y, initialZ);
 
+        if (hitWall.collider != null) lastHitwall = hitWall;
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.G))
@@ -117,7 +121,7 @@ public class Character : MonoBehaviour
     {
         DrawBox();
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + ForwardNoZ * m.castWallLength * Mathf.Abs(horizontalAxis));
+        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + castWallDirection.normalized * m.castWallLength);
     }
 
     #endregion
@@ -438,7 +442,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
         wallSlideFx.Play();
-        FlipVisuals(true);
+        //FlipVisuals(true);
     }
 
     private void WallSliding_Update()
@@ -450,7 +454,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(slide);
         SetHorizontalVelocity(0);
 
-        if (!CastWall())
+        if (!CastWall() && leavingWallSlide != null)
         {
             leavingWallSlide = StartCoroutine(LeavingWallSlide());
         }
@@ -480,7 +484,7 @@ public class Character : MonoBehaviour
     {
         animator.WallSliding(false);
         wallSlideFx.Stop();
-        FlipVisuals(false);
+        //FlipVisuals(false);
     }
 
     #endregion
@@ -491,7 +495,11 @@ public class Character : MonoBehaviour
 
     private void WallJump()
     {
-        Vector3 jumpDir = (hitWall.normal + Vector3.up).normalized;
+        stateMachine.ChangeState(CharacterState.Falling);
+        Debug.Log("WallJump " + lastHitwall.collider.gameObject.name);
+        ResetFallProgress();
+
+        Vector3 jumpDir = (lastHitwall.normal + Vector3.up).normalized;
         Vector3 noZ = new Vector3(jumpDir.x, jumpDir.y, 0);
         p.RegisterPropulsion(noZ, m.wallJump, EndWallJump);
         animator.WallJump();
@@ -622,7 +630,8 @@ public class Character : MonoBehaviour
     private RaycastHit hitCeiling;
     private RaycastHit[] hitsAttack;
     private RaycastHit hitWall;
-
+    private RaycastHit lastHitwall;
+    
     private void DrawBox()
     {
         if (drawMovementHitbox)
@@ -658,9 +667,11 @@ public class Character : MonoBehaviour
         return hitGrounds.Length > 0;
     }
 
+    private Vector3 castWallDirection => horizontalAxis != 0 ? new Vector3(horizontalAxis, 0, 0).normalized : body.velocity.x != 0 ? new Vector3(body.velocity.x, 0, 0) : ForwardNoZ;
+
     public bool CastWall()
     {
-        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.wallMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, castWallDirection.normalized, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.wallMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -744,13 +755,6 @@ public class Character : MonoBehaviour
     #region Visuals
 
     private float lastDir = 1;
-
-    private void FlipVisuals(bool flip)
-    {
-        float angle = 0f;
-        if (flip) angle = 180f;
-        visuals.transform.localEulerAngles = new Vector3(0, angle, 0);
-    }
 
     private void OrientModelToDirection()
     {

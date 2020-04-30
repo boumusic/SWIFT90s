@@ -35,6 +35,8 @@ public class CTFManager : NetworkBehaviour
 
     private void StartTimer()
     {
+
+        AudioManager.instance.PlayMusic(AudioManager.instance.AC_BattleTheme, 0.7f);
         if (isServer)
         {
             timer = new Timer(minutes, seconds, TimerOver);
