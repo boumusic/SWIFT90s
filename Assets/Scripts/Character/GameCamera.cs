@@ -59,9 +59,9 @@ public class GameCamera : MonoBehaviour
             {
                 if (focusPoints[i].transform.position.x >= focusPoints[topRightest].transform.position.x)
                 {
+                        topRightest = i;
                     if (focusPoints[i].transform.position.y >= focusPoints[topRightest].transform.position.y)
                     {
-                        topRightest = i;
                     }
                 }
             }
@@ -83,9 +83,9 @@ public class GameCamera : MonoBehaviour
             {
                 if (focusPoints[i].transform.position.x <= focusPoints[bottomLeftest].transform.position.x)
                 {
+                        bottomLeftest = i;
                     if (focusPoints[i].transform.position.y <= focusPoints[bottomLeftest].transform.position.y)
                     {
-                        bottomLeftest = i;
                     }
                 }
             }
