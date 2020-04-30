@@ -57,20 +57,13 @@ public class CTFManager : NetworkBehaviour
         }
     }
 
-    private bool isDraw = false;
+    private bool isDraw => TeamManager.Instance.IsDraw;
 
     private void TimerOver()
     {
         if (reachedHalfTime)
         {
-            if (!isDraw)
-            {
-                GameOver();
-            }
-            else
-            {
-                // Trigger boolean d'overtime, le prochain flag est décisif
-            }
+            GameOver();
         }
 
         else

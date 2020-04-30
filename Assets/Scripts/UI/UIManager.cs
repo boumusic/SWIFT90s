@@ -100,19 +100,25 @@ public class UIManager : MonoBehaviour
 
     public void DisplayEndgameScreen()
     {
-        bool won = Player.Team.HasWon;
-        gameOver.DisplayGameOver(won);
+        if (TeamManager.Instance.IsDraw) Player.Team.outcome = Outcome.Draw;
+        Outcome outcome = Player.Team.outcome;
+        gameOver.DisplayGameOver(outcome);
 
         AudioManager AM = AudioManager.instance;
 
-        if(won)
+        switch(outcome)
         {
-            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Victory);
-        }
+            case Outcome.Victory:
+                AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Victory);
+                break;
 
-        else
-        {
-            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Defeat);
+            case Outcome.Draw:
+                AudioManager.instance.PlaySoundRandomInList(AudioManager.instance.AS_Announcer, AudioManager.instance.AC_Draw);
+                break;
+
+            case Outcome.Defeat:
+                AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Defeat);
+                break;
         }
 
         AudioManager.instance.StartCoroutine(AudioManager.instance.FadeIn(AudioManager.instance.AS_Music, AudioManager.instance.AC_EndTheme, 1f, 0.7f));

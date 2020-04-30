@@ -9,9 +9,9 @@ public class GameOver : MonoBehaviour
     public Animator animator;
     public TextMeshProUGUI text;
 
-    public void DisplayGameOver(bool victory)
+    public void DisplayGameOver(Outcome outcome)
     {
-        string txt = victory ? "Victory" : "Defeat";
+        string txt = outcome.ToString();
         animator.SetTrigger(txt);
         text.text = txt;
     }
