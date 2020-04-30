@@ -13,6 +13,21 @@ public class SwiftNetworkManager : NetworkManager
 
         ctfManager.Awake();
         teamManager.Awake();
+
+        switch (FindObjectOfType<PlayerInfo>().role)
+        {
+            case 0:
+                StartClient();
+                break;
+            case 1:
+                StartHost();
+                break;
+            case 2:
+                StartServer();
+                break;
+            default:
+                break;
+        }
     }
 
     public override GameObject OnServerAddPlayer(NetworkConnection conn)
