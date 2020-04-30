@@ -1,4 +1,5 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 51edfbd59ff4e664f82c65b4e58ca05d
 ModelImporter:
   serializedVersion: 19300
@@ -9,6 +10,13 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: checker_map_gravity.001
     second: {fileID: 2100000, guid: 866c4f71b4941d24fbba76f2c04965d9, type: 2}
+=======
+guid: 177f3b116aef78e41a3c6c717fb10308
+ModelImporter:
+  serializedVersion: 19300
+  internalIDToNameTable: []
+  externalObjects: {}
+>>>>>>> master
   materials:
     materialImportMode: 1
     materialName: 0
