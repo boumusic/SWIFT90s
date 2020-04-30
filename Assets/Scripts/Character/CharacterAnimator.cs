@@ -46,6 +46,17 @@ public class CharacterAnimator : MonoBehaviour
     {
         Bool("isGrounded", value);
     }
+    
+    public void Taunt()
+    {
+        int index = UnityEngine.Random.Range(0, 2);
+        Float("tauntIndex", index);
+    }
+
+    public void Taunting(bool taunt)
+    {
+        Bool("isTaunting", taunt);
+    }
 
     public void Attacking(bool attack)
     {

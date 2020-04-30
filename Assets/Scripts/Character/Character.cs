@@ -154,13 +154,17 @@ public class Character : MonoBehaviour
 
     public void InputHorizontal(float horizontal)
     {
-        this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
+        if (!taunting)
+            this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
     }
 
     public void InputVertical(float vertical)
     {
-        this.verticalAxis = Mathf.Abs(vertical) < 0.2f ? 0 : Mathf.Sign(vertical);
-        InputDownButton(vertical < 0f);
+        if (!taunting)
+        {
+            this.verticalAxis = Mathf.Abs(vertical) < 0.2f ? 0 : Mathf.Sign(vertical);
+            InputDownButton(vertical < 0f);
+        }
     }
 
     public void InputDownButton(bool down)
@@ -248,7 +252,8 @@ public class Character : MonoBehaviour
         }
         else
         {
-            body.velocity = velocity;
+            if (!taunting)
+                body.velocity = velocity;
         }
     }
 
@@ -261,11 +266,9 @@ public class Character : MonoBehaviour
     private void Grounded_Enter()
     {
         //Debug.Log("Enter Ground");
-        fb.Play("Land");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
-        animator.Land();
     }
 
     private void Grounded_Update()
@@ -386,6 +389,7 @@ public class Character : MonoBehaviour
                 {
                     CanPassThrough(false);
                     SnapToGround();
+                    Land();
                     stateMachine.ChangeState(CharacterState.Grounded);
                 }
             }
@@ -412,6 +416,12 @@ public class Character : MonoBehaviour
     }
 
     #endregion
+
+    private void Land()
+    {
+        fb.Play("Land");
+        animator.Land();
+    }
 
     #region WallSliding
 
@@ -452,9 +462,11 @@ public class Character : MonoBehaviour
 
         if (CastGround())
         {
+            Land();
             if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
             SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
+
         }
     }
 
@@ -523,7 +535,7 @@ public class Character : MonoBehaviour
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
             animator.Attacking(true);
-            Vector2 dir = new Vector2(Mathf.Abs(lastAttackDirection.x), lastAttackDirection.y);
+            Vector2 dir = new Vector2(Mathf.Abs(lastAttackDirection.x) > 0f ? 1 : 0f, lastAttackDirection.y == 0 ? 0 : Mathf.Sign(lastAttackDirection.y));
             animator.AttackDirection(dir);
             Debug.Log("Attack Dir: " + dir);
         }
@@ -778,14 +790,18 @@ public class Character : MonoBehaviour
 
     public void Taunt()
     {
-        if(CanTaunt)
+        if (CanTaunt)
         {
             stateMachine.ChangeState(CharacterState.Taunting);
         }
     }
 
-    private void Taunt_Enter()
+    private void Taunting_Enter()
     {
+        SetHorizontalVelocity(0);
+        SetVerticalVelocity(0);
+        animator.Taunt();
+        animator.Taunting(true);
         StartCoroutine(TauntDuration());
     }
 
@@ -797,6 +813,7 @@ public class Character : MonoBehaviour
 
     private void EndTaunt()
     {
+        animator.Taunting(false);
         stateMachine.ChangeState(CharacterState.Grounded);
     }
 
