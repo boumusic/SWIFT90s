@@ -1688,5 +1688,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ESSENTIALS
       objectReference: {fileID: 0}
+    - target: {fileID: 2779491672305203224, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: sceneId
+      value: 3871996432
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe885c7988dba0b4787a4363457a571e, type: 3}
