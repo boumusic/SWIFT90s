@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 using System;
 
 public class CharacterAnimator : MonoBehaviour
 {
     public Animator[] animators;
+    public NetworkAnimator nAnimator;
 
     public Action onLandAnim;
     public Action onJumpAnim;
@@ -46,6 +48,17 @@ public class CharacterAnimator : MonoBehaviour
     {
         Bool("isGrounded", value);
     }
+    
+    public void Taunt()
+    {
+        int index = UnityEngine.Random.Range(0, 2);
+        Float("tauntIndex", index);
+    }
+
+    public void Taunting(bool taunt)
+    {
+        Bool("isTaunting", taunt);
+    }
 
     public void Attacking(bool attack)
     {
@@ -59,6 +72,12 @@ public class CharacterAnimator : MonoBehaviour
         {
             onAttackEndAnim?.Invoke();
         }
+    }
+
+    public void AttackDirection(Vector2 dir)
+    {
+        Float("x", dir.x);
+        Float("y", dir.y);
     }
 
     public void Jump(bool doubleJ)
@@ -107,11 +126,7 @@ public class CharacterAnimator : MonoBehaviour
 
     private void Trigger(string name)
     {
-        for (int i = 0; i < animators.Length; i++)
-        {
-            if (animators[i] == null) continue;
-            animators[i].SetTrigger(name);
-        }
+        nAnimator.SetTrigger(name);        
     }
 
     private void Bool(string name, bool value)

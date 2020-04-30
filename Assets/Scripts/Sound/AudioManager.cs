@@ -33,7 +33,6 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        PlayMusic(AC_BattleTheme, 0.7f);
     }
 
 

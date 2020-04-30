@@ -71,6 +71,7 @@ public class Character : MonoBehaviour
     {
     }
 
+    private float initialZ;
     public void Initialize(NetworkedPlayer player)
     {
         this.player = player;
@@ -80,11 +81,11 @@ public class Character : MonoBehaviour
         stateMachine.ChangeState(CharacterState.Falling);
         ResetJumpCount();
 
-
         flagVisuals.Initialize(1 - TeamIndex);
         UpdateFlagVisuals();
         UpdateTexture();
         UpdateTextName();
+        initialZ = body.position.z;
     }
 
     private void FixedUpdate()
@@ -104,11 +105,12 @@ public class Character : MonoBehaviour
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
         WallJumpUpdate();
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
+        body.position = new Vector3(body.position.x, body.position.y, initialZ);
 
-        flagBearerFx.SetActive(HasFlag);
+        if (hitWall.collider != null) lastHitwall = hitWall;
 
 #if UNITY_EDITOR
-        if(Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G))
         {
             Die();
         }
@@ -119,7 +121,7 @@ public class Character : MonoBehaviour
     {
         DrawBox();
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
+        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + castWallDirection.normalized * m.castWallLength);
     }
 
     #endregion
@@ -156,13 +158,17 @@ public class Character : MonoBehaviour
 
     public void InputHorizontal(float horizontal)
     {
-        this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
+        if (!taunting)
+            this.horizontalAxis = Mathf.Abs(horizontal) < 0.2f ? 0 : Mathf.Sign(horizontal);
     }
 
     public void InputVertical(float vertical)
     {
-        this.verticalAxis = Mathf.Abs(vertical) < 0.2f ? 0 : Mathf.Sign(vertical);
-        InputDownButton(vertical < 0f);
+        if (!taunting)
+        {
+            this.verticalAxis = Mathf.Abs(vertical) < 0.2f ? 0 : Mathf.Sign(vertical);
+            InputDownButton(vertical < 0f);
+        }
     }
 
     public void InputDownButton(bool down)
@@ -250,7 +256,8 @@ public class Character : MonoBehaviour
         }
         else
         {
-            body.velocity = velocity;
+            if (!taunting)
+                body.velocity = velocity;
         }
     }
 
@@ -263,11 +270,9 @@ public class Character : MonoBehaviour
     private void Grounded_Enter()
     {
         //Debug.Log("Enter Ground");
-        fb.Play("Land");
         CanPassThrough(false);
         SetVerticalVelocity(0);
         ResetJumpCount();
-        animator.Land();
     }
 
     private void Grounded_Update()
@@ -296,6 +301,7 @@ public class Character : MonoBehaviour
 
     public void ReceiveJumpInput()
     {
+        if (taunting) return;
         if (isWallSliding)
         {
             WallJump();
@@ -387,6 +393,7 @@ public class Character : MonoBehaviour
                 {
                     CanPassThrough(false);
                     SnapToGround();
+                    Land();
                     stateMachine.ChangeState(CharacterState.Grounded);
                 }
             }
@@ -414,6 +421,12 @@ public class Character : MonoBehaviour
 
     #endregion
 
+    private void Land()
+    {
+        fb.Play("Land");
+        animator.Land();
+    }
+
     #region WallSliding
 
     private bool isWallSliding => CurrentState == CharacterState.WallSliding;
@@ -429,7 +442,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
         wallSlideFx.Play();
-        FlipVisuals(true);
+        //FlipVisuals(true);
     }
 
     private void WallSliding_Update()
@@ -441,21 +454,23 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(slide);
         SetHorizontalVelocity(0);
 
-        if (!CastWall())
+        if (!CastWall() && leavingWallSlide != null)
         {
             leavingWallSlide = StartCoroutine(LeavingWallSlide());
         }
 
-        if(CastWall())
+        if (CastWall())
         {
             if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
         }
 
         if (CastGround())
         {
+            Land();
             if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
             SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
+
         }
     }
 
@@ -469,7 +484,7 @@ public class Character : MonoBehaviour
     {
         animator.WallSliding(false);
         wallSlideFx.Stop();
-        FlipVisuals(false);
+        //FlipVisuals(false);
     }
 
     #endregion
@@ -480,8 +495,13 @@ public class Character : MonoBehaviour
 
     private void WallJump()
     {
-        Vector3 jumpDir = (hitWall.normal + Vector3.up).normalized;
-        p.RegisterPropulsion(jumpDir, m.wallJump, EndWallJump);
+        stateMachine.ChangeState(CharacterState.Falling);
+        Debug.Log("WallJump " + lastHitwall.collider.gameObject.name);
+        ResetFallProgress();
+
+        Vector3 jumpDir = (lastHitwall.normal + Vector3.up).normalized;
+        Vector3 noZ = new Vector3(jumpDir.x, jumpDir.y, 0);
+        p.RegisterPropulsion(noZ, m.wallJump, EndWallJump);
         animator.WallJump();
         wallJumping = true;
     }
@@ -489,7 +509,7 @@ public class Character : MonoBehaviour
     private void WallJumpUpdate()
     {
         //if (wallJumping)
-            //FlipVisuals(true);
+        //FlipVisuals(true);
     }
 
     private void EndWallJump()
@@ -502,10 +522,10 @@ public class Character : MonoBehaviour
 
     #region Attack
 
-    private Vector3 attackDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+    private Vector3 attackDirection => nullInput ? nullVelocity ? ForwardNoZ : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private Vector3 lastAttackDirection;
     public bool IsAttacking { get; private set; }
-    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag;
+    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag && !taunting;
     private float attackProgress = 0f;
     private float attackCooldownProgress = 0f;
     private bool attackCooldownDone = true;
@@ -514,6 +534,8 @@ public class Character : MonoBehaviour
     {
         if (CanAttack)
         {
+            charactersHitThisAttack.Clear();
+
             lastAttackDirection = attackDirection;
             IsAttacking = true;
             attackProgress = 0f;
@@ -521,9 +543,13 @@ public class Character : MonoBehaviour
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
             animator.Attacking(true);
+            Vector2 dir = new Vector2(Mathf.Abs(lastAttackDirection.x) > 0f ? 1 : 0f, lastAttackDirection.y == 0 ? 0 : Mathf.Sign(lastAttackDirection.y));
+            animator.AttackDirection(dir);
+            Debug.Log("Attack Dir: " + dir);
         }
     }
 
+    List<Character> charactersHitThisAttack = new List<Character>();
     private void AttackUpdate()
     {
         if (IsAttacking)
@@ -539,11 +565,13 @@ public class Character : MonoBehaviour
                     {
                         if (chara != this && chara.TeamIndex != TeamIndex)
                         {
-                            if (!chara.IsDodging && !IsDead)
+                            if (!chara.IsDodging && !IsDead && !charactersHitThisAttack.Contains(chara))
                             {
+                                charactersHitThisAttack.Add(chara);
+
                                 AudioManager.instance.PlaySound(AudioManager.instance.AS_Fight, AudioManager.instance.AC_Hit);
                                 AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Kill);
-                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());                                
+                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());
                             }
                         }
                     }
@@ -554,6 +582,10 @@ public class Character : MonoBehaviour
             attackProgress += Time.deltaTime / m.attackDuration;
             if (attackProgress >= 1)
             {
+                if (IsAttacking)
+                {
+                    ResetFallProgress();
+                }
                 animator.Attacking(false);
                 IsAttacking = false;
             }
@@ -603,7 +635,8 @@ public class Character : MonoBehaviour
     private RaycastHit hitCeiling;
     private RaycastHit[] hitsAttack;
     private RaycastHit hitWall;
-
+    private RaycastHit lastHitwall;
+    
     private void DrawBox()
     {
         if (drawMovementHitbox)
@@ -634,14 +667,16 @@ public class Character : MonoBehaviour
         hitGrounds = Physics.BoxCastAll(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, Quaternion.identity, m.groundRaycastDown, m.groundMask, QueryTriggerInteraction.Ignore);
         for (int i = 0; i < hitGrounds.Length; i++)
         {
-            Debug.Log(hitGrounds[i].collider.gameObject.name);
+            //Debug.Log(hitGrounds[i].collider.gameObject.name);
         }
         return hitGrounds.Length > 0;
     }
 
+    private Vector3 castWallDirection => horizontalAxis != 0 ? new Vector3(horizontalAxis, 0, 0).normalized : body.velocity.x != 0 ? new Vector3(body.velocity.x, 0, 0) : ForwardNoZ;
+
     public bool CastWall()
     {
-        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.wallMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, castWallDirection.normalized, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.wallMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -669,7 +704,8 @@ public class Character : MonoBehaviour
 
     #region Dodge
 
-    private Vector3 dodgeDirection => nullInput ? transform.forward : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+    private Vector3 ForwardNoZ => new Vector3(transform.forward.x, transform.forward.y, 0).normalized;
+    private Vector3 dodgeDirection => nullInput ? ForwardNoZ : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private bool dodgeCooldownDone = true;
     private float dodgeCooldownProgress = 0f;
     private bool canDodge => dodgeCooldownDone && !IsAttacking;
@@ -725,13 +761,6 @@ public class Character : MonoBehaviour
 
     private float lastDir = 1;
 
-    private void FlipVisuals(bool flip)
-    {
-        float angle = 0f;
-        if (flip) angle = 180f;
-        visuals.transform.localEulerAngles = new Vector3(0, angle, 0);
-    }
-
     private void OrientModelToDirection()
     {
         if (horizontalAxis == 0) lastDir = Mathf.Sign(velocity.x);
@@ -754,6 +783,42 @@ public class Character : MonoBehaviour
     public void UpdateTextName()
     {
         textName.text = PlayerName;
+    }
+
+    #endregion
+
+    #region Taunt
+
+    private bool CanTaunt => grounded;
+    private bool taunting => CurrentState == CharacterState.Taunting;
+
+    public void Taunt()
+    {
+        if (CanTaunt)
+        {
+            stateMachine.ChangeState(CharacterState.Taunting);
+        }
+    }
+
+    private void Taunting_Enter()
+    {
+        SetHorizontalVelocity(0);
+        SetVerticalVelocity(0);
+        animator.Taunt();
+        animator.Taunting(true);
+        StartCoroutine(TauntDuration());
+    }
+
+    private IEnumerator TauntDuration()
+    {
+        yield return new WaitForSeconds(2);
+        EndTaunt();
+    }
+
+    private void EndTaunt()
+    {
+        animator.Taunting(false);
+        stateMachine.ChangeState(CharacterState.Grounded);
     }
 
     #endregion
@@ -784,9 +849,22 @@ public class Character : MonoBehaviour
 
     public void CaptureFlag(Altar altar)
     {
+        //SAME TEAM
+        if (UIManager.Instance.Player.teamIndex == TeamIndex)
+        {
+            AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_FlagTookAlly);
+        }
+
+        else
+        {
+            AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_FlagTookEnemy);
+        }
+
         capturedAltar = altar;
         HasFlag = true;
         UpdateFlagVisuals();
+
+        flagBearerFx.SetActive(HasFlag);
     }
 
     public void DropFlag()
@@ -794,7 +872,46 @@ public class Character : MonoBehaviour
         capturedAltar?.ResetFlag();
         capturedAltar = null;
         HasFlag = false;
+
+        flagBearerFx.SetActive(HasFlag);
         UpdateFlagVisuals();
+    }
+
+    public void Score()
+    {
+        //SAME TEAM
+        if (UIManager.Instance.Player.teamIndex == TeamIndex)
+        {
+            if (player.Team.Score == 0)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_01);
+            if (player.Team.Score == 1)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_02);
+            if (player.Team.Score == 2)
+            {
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Loop, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Movement, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Fight, true);
+                AudioManager.instance.FadeOut(AudioManager.instance.AS_Music, 0.6f);
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_03);
+            }
+        }
+
+        //ENEMY TEAM
+        else
+        {
+            if (player.Team.Score == 0)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreEnemy_01);
+            if (player.Team.Score == 1)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreEnemy_02);
+            if (player.Team.Score == 2)
+            {
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreEnemy_03);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Loop, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Movement, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Fight, true);
+                AudioManager.instance.FadeOut(AudioManager.instance.AS_Music, 0.6f);
+            }
+        }
     }
 
     #endregion
@@ -811,7 +928,22 @@ public class Character : MonoBehaviour
             fb.Play("Death");
             DropFlag();
             AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Death);
+
+            defaultCollider.enabled = false;
+
+            StartCoroutine(DeathTimerRoutine());
         }
+    }
+
+    IEnumerator DeathTimerRoutine()
+    {
+        yield return new WaitForSecondsRealtime(CTFManager.Instance.respawnTimer);
+
+        transform.position = player.spawnPosition;
+
+        visuals.gameObject.SetActive(true);
+        IsDead = false;
+        defaultCollider.enabled = true;
     }
 
     #endregion
@@ -823,5 +955,6 @@ public enum CharacterState
     Jumping,
     Falling,
     WallClimbing,
-    WallSliding
+    WallSliding,
+    Taunting
 }

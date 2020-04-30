@@ -6,12 +6,15 @@ public class Altar : LevelZone
 {
     [Header("Altar")]
     public Flag flag;
+    public ParticleSystem capturedFx;
 
     private bool isEnabled = true;
     private bool captured = false;
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
+
         flag.Initialize(teamIndex);
     }
 
@@ -20,9 +23,11 @@ public class Altar : LevelZone
         base.OnCharacterStay(character);
         if(!character.HasFlag && isEnabled && character.TeamIndex != teamIndex && !character.IsDead)
         {
+            capturedFx.Play();
+            UIManager.Instance.LogMessage(character.PlayerName + " Captured the flag of Team " + teamIndex + "!");
             character.CaptureFlag(this);
-            UpdateFlag();
             captured = true;
+            UpdateFlag();
             CTFManager.Instance.CapturedFlagOfTeam(teamIndex);
         }
     }

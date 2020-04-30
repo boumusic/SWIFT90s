@@ -22,14 +22,10 @@ public class LevelZone : MonoBehaviour
 
     }
 
-    private void Awake()
+    public virtual void Awake()
     {
         UpdateRadius();
 
-        NetworkStartPosition startPos = GetComponentInChildren<NetworkStartPosition>();
-
-        if (!startPos) return;
-        startPos.Register(teamIndex);
     }
 
     private void OnEnable()

@@ -1,6 +1,14 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public enum Outcome
+{
+    Defeat,
+    Victory,
+    Draw
+}
 
 [System.Serializable]
 public class Team
@@ -11,8 +19,9 @@ public class Team
     public Color Color { get => color; }
     public int Score { get => score; set => score = value; }
 
-    public bool HasWon { get; private set; }
-    private int score;
+    public Outcome outcome;
+    //public bool HasWon { get; private set; }
+    public int score;
     private Color color;
 
     public void EarnPoint(int point = 1)
@@ -20,7 +29,7 @@ public class Team
         score += point;
         if (score >= CTFManager.Instance.goalPoints)
         {
-            HasWon = true;
+            outcome = Outcome.Victory;
             CTFManager.Instance.TeamWins(this);
         }
     }
@@ -52,23 +61,43 @@ public class Team
     }
 }
 
-public class TeamManager : MonoBehaviour
+public class TeamManager : NetworkBehaviour
 {
     private static TeamManager instance;
     public static TeamManager Instance
     {
-        get
-        {
-            if (!instance) instance = FindObjectOfType<TeamManager>();
-            return instance;
-        }
+        get { return instance; }
     }
+
 
     public static int TeamCount = 2;
     public List<Team> teams = new List<Team>();
     public List<Color> colors = new List<Color>();
 
+    public bool IsDraw
+    {
+        get
+        {
+            if(teams.Count > 0)
+            {
+                int team0Score = teams[0].score;
+                for (int i = 0; i < teams.Count; i++)
+                {
+                    if(teams[i].score != team0Score)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public bool InputEnabled { get; private set; }
+
 
     public int GetIndex(NetworkedPlayer player)
     {
@@ -83,9 +112,15 @@ public class TeamManager : MonoBehaviour
         return 0;
     }
 
-    private void Awake()
+    public void Awake()
     {
+        instance = this;
         InitializeTeams();
+    }
+
+    private void OnEnable()
+    {
+        ToggleInputs(false);
     }
 
     private void InitializeTeams()

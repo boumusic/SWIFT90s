@@ -45,21 +45,58 @@ public class GameCamera : MonoBehaviour
 
     public Vector3 AveragePos()
     {
-        if (focusPoints.Count > 0)
+        Vector3 topRight = GetTopRightPoint();
+        Vector3 bottomLeft = GetBottomLeftPoint();
+        return (topRight + bottomLeft) / 2;
+    }
+
+    public Vector3 GetTopRightPoint()
+    {
+        if(focusPoints.Count > 0)
         {
-            Vector3 pos = Vector3.zero;
+            int topRightest = 0;
             for (int i = 0; i < focusPoints.Count; i++)
             {
-                pos += focusPoints[i].transform.position;
+                if (focusPoints[i].transform.position.x >= focusPoints[topRightest].transform.position.x)
+                {
+                    if (focusPoints[i].transform.position.y >= focusPoints[topRightest].transform.position.y)
+                    {
+                        topRightest = i;
+                    }
+                }
             }
 
-            return pos / focusPoints.Count;
+            return focusPoints[topRightest].transform.position;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
+
+    public Vector3 GetBottomLeftPoint()
+    {
+        if (focusPoints.Count > 0)
+        {
+            int bottomLeftest = 0;
+            for (int i = 0; i < focusPoints.Count; i++)
+            {
+                if (focusPoints[i].transform.position.x <= focusPoints[bottomLeftest].transform.position.x)
+                {
+                    if (focusPoints[i].transform.position.y <= focusPoints[bottomLeftest].transform.position.y)
+                    {
+                        bottomLeftest = i;
+                    }
+                }
+            }
+            return focusPoints[bottomLeftest].transform.position;
         }
 
         else
         {
             return Vector3.zero;
         }
+        
     }
 
     public float GetGreatestDistance()
