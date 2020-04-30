@@ -9,6 +9,7 @@ public class NetworkedPlayer : NetworkBehaviour
     public int teamIndex;
 
     public Character character;
+    public NetworkAnimator animator;
     public string PlayerName => character.PlayerName;
     public Team Team => TeamManager.Instance.teams[teamIndex];
 
@@ -27,25 +28,32 @@ public class NetworkedPlayer : NetworkBehaviour
 
             GetComponent<Rigidbody>().isKinematic = true;
         }
-
         else
         {
             UIManager.Instance.AssignPlayer(this);
+
+            character.animator.onAttackAnim += () => animator.SetTrigger("Attack");
+            character.animator.onDoubleJumpAnim += () => animator.SetTrigger("DoubleJump");
+            character.animator.onJumpAnim += () => animator.SetTrigger("Jump");
+            character.animator.onLandAnim += () => animator.SetTrigger("Land");
+            character.animator.onDeathAnim += () => animator.SetTrigger("Death");
+            character.animator.onDodgeAnim += () => animator.SetTrigger("Dodge");
         }
 
-        Debug.Log("joining team " + teamIndex);
         TeamManager.Instance.JoinTeam(teamIndex, this);
     }
 
     private void Update()
     {
+        if (!hasAuthority) return;
+
         Inputs();
     }
 
     public void ToggleInputs(bool on)
     {
         inputEnabled = on;
-        if(!on)
+        if (!on)
         {
             character.InputHorizontal(0);
             character.InputVertical(0);
@@ -56,7 +64,7 @@ public class NetworkedPlayer : NetworkBehaviour
     {
         if (!inputEnabled) return;
 
-        if(Input.GetKeyDown(jumpKey))
+        if (Input.GetKeyDown(jumpKey))
         {
             character.ReceiveJumpInput();
         }
@@ -76,5 +84,17 @@ public class NetworkedPlayer : NetworkBehaviour
 
         character.InputHorizontal(horizontal);
         character.InputVertical(vertical);
+    }
+
+    [Command]
+    public void CmdKillPlayer(NetworkIdentity killerID, NetworkIdentity victimID)
+    {
+        RpcKillPlayer(killerID, victimID);
+    }
+
+    [ClientRpc]
+    public void RpcKillPlayer(NetworkIdentity killerID, NetworkIdentity victimID)
+    {
+        character.Kill(victimID.gameObject.GetComponent<Character>());
     }
 }

@@ -861,6 +861,7 @@ MonoBehaviour:
   syncInterval: 0.1
   teamIndex: 0
   character: {fileID: 1572720513423746987}
+  animator: {fileID: 3422047821608393806}
   jumpKey: 32
   attackKey: 323
   dodgeKey: 324

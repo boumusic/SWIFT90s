@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
 using TMPro;
+using Mirror;
 
 public class Character : MonoBehaviour
 {
@@ -499,7 +500,7 @@ public class Character : MonoBehaviour
                         {
                             if (!chara.IsDodging)
                             {
-                                Kill(chara);
+                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());
                             }
                         }
                     }
@@ -528,7 +529,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void Kill(Character chara)
+    public void Kill(Character chara)
     {
         if (!chara.IsDead)
         {
