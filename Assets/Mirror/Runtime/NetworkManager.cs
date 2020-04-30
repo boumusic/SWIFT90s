@@ -1295,7 +1295,7 @@ namespace Mirror
         /// <param name="conn">Connection from client.</param>
         public virtual GameObject OnServerAddPlayer(NetworkConnection conn)
         {
-            int teamIndex = (conn.connectionId % 2 == 0) ? 0 : 1;
+            int teamIndex = (numPlayers % 2 == 0) ? 0 : 1;
 
             Transform startPos = GetStartPosition(teamIndex);
             GameObject player = startPos != null

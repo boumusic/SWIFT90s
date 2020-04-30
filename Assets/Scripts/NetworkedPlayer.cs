@@ -19,6 +19,8 @@ public class NetworkedPlayer : NetworkBehaviour
     public KeyCode dodgeKey = KeyCode.Mouse1;
     private bool inputEnabled = true;
 
+    Vector3 spawnPoint;
+
     private void Start()
     {
         character.Initialize(this);
@@ -30,6 +32,8 @@ public class NetworkedPlayer : NetworkBehaviour
         }
         else
         {
+            spawnPoint = transform.position;
+
             UIManager.Instance.AssignPlayer(this);
 
             character.animator.onAttackAnim += () => animator.SetTrigger("Attack");
