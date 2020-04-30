@@ -800,7 +800,7 @@ public class Character : MonoBehaviour
             visuals.gameObject.SetActive(false);
             IsDead = true;
             fb.Play("Death");
-            HasFlag = false;
+            DropFlag();
         }
     }
 
