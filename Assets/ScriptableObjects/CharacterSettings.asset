@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8478407f92610243b62bee8d5b1e9d1, type: 3}
   m_Name: CharacterSettings
   m_EditorClassIdentifier: 
-  runSpeed: 5
+  runSpeed: 3.7
   groundedAcceleration: 10
   groundedDeceleration: 1.5
   jumpCount: 2
-  jumpStrength: 15
+  jumpStrength: 13
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -40,7 +40,7 @@ MonoBehaviour:
       outWeight: 0.09884675
     - serializedVersion: 3
       time: 0.66283786
-      value: 0.13414788
+      value: 0.18801141
       inSlope: -0.68652415
       outSlope: -0.14374776
       tangentMode: 1
@@ -59,11 +59,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  jumpDuration: 0.25
+  jumpDuration: 0.35
   aerialAcceleration: 6
   aerialDeceleration: 1.02
   timeToReachMaxFall: 0.6
-  maxFallSpeed: 50
+  maxFallSpeed: 20
   fallCurve:
     serializedVersion: 2
     m_Curve:
@@ -88,12 +88,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  downButtonFallSpeedMultiplier: 3
+  downButtonFallSpeedMultiplier: 2.5
   defaultLayer: 0
-  passThroughLayer: 10
+  passThroughLayer: 12
+  passThroughLayerPlatform: 10
   fallThroughDuration: 0.5
   dodge:
-    strength: 50
+    strength: 15
     curve:
       serializedVersion: 2
       m_Curve:
@@ -136,7 +137,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.15
+    duration: 0.5
     airControl: 0
     direction: {x: 0, y: 0, z: 0}
     priority: 0
@@ -158,17 +159,22 @@ MonoBehaviour:
   dodgeCooldown: 1
   groundMask:
     serializedVersion: 2
-    m_Bits: 1537
-  groundCastRadius: 1
+    m_Bits: 1536
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 512
+  groundCastRadius: 1.61
   castBoxWidth: 0.24
   groundRaycastDown: 0.82
   castGroundOrigin: 0.47
+  castWallHeight: 0.23
   castWallLength: 1
-  castCeilingOrigin: 1.48
+  castCeilingOrigin: 1.13
   castCeilingLength: 0.54
   timeToReachMaxSlide: 1
   minWallSlideSpeed: 0.8
   maxWallSlideSpeed: 12
+  wallSlideBuffer: 0.35
   slideCurve:
     serializedVersion: 2
     m_Curve:
@@ -237,12 +243,12 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.25
+    duration: 0.5
     airControl: 1
     direction: {x: 0, y: 0, z: 0}
     priority: 0
     separateAxes: 1
-    strengthHoriz: 40
+    strengthHoriz: 20
     curveHoriz:
       serializedVersion: 2
       m_Curve:
@@ -285,7 +291,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    strengthVerti: 25
+    strengthVerti: 5
     curveVerti:
       serializedVersion: 2
       m_Curve:
@@ -328,7 +334,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  attackDuration: 0.2
+  attackDuration: 0.25
   attackDelay: 0.2
   attackCooldown: 0.3
   attackLength: 0.95
@@ -336,7 +342,7 @@ MonoBehaviour:
   attackWidth: 0.13
   attackOffset: 0.72
   attackImpulse:
-    strength: 20
+    strength: 12
     curve:
       serializedVersion: 2
       m_Curve:
@@ -360,16 +366,16 @@ MonoBehaviour:
         outWeight: 0.23721
       - serializedVersion: 3
         time: 0.27995592
-        value: 0.23805684
+        value: 0.15993184
         inSlope: -5.3335032
-        outSlope: -0.47078323
+        outSlope: -0.28584254
         tangentMode: 1
         weightedMode: 0
         inWeight: 0.60649765
-        outWeight: 0.113626756
+        outWeight: 0.116538934
       - serializedVersion: 3
         time: 0.9984222
-        value: 0.13932315
+        value: 0.05369082
         inSlope: -0.07682467
         outSlope: -0.07682467
         tangentMode: 0
@@ -379,7 +385,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.2
+    duration: 0.35
     airControl: 0
     direction: {x: 0, y: 0, z: 0}
     priority: 0
