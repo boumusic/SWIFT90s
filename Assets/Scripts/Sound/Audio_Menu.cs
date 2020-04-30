@@ -12,7 +12,7 @@ public class Audio_Menu : MonoBehaviour
 
     public void StartMusic()
     {
-        AudioManager.instance.StartCoroutine(AudioManager.instance.FadeIn(AudioManager.instance.AS_Music, AudioManager.instance.AC_MenuTheme, 3f,0.7f));
+        AudioManager.instance.StartCoroutine(AudioManager.instance.FadeIn(AudioManager.instance.AS_Music, AudioManager.instance.AC_MenuTheme, 2f,0.7f));
 
 
     }
