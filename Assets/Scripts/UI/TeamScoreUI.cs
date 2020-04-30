@@ -15,11 +15,16 @@ public class TeamScoreUI : MonoBehaviour
 
     private void Awake()
     {
+    }
+
+    private void Start()
+    {
         Initialize();
     }
 
     public void Initialize()
     {
+        Debug.Log("Should Initialize " + gameObject.name);
         int count = CTFManager.Instance.goalPoints;
         for (int i = 0; i < count; i++)
         {

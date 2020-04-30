@@ -521,6 +521,9 @@ public class Character : MonoBehaviour
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
             animator.Attacking(true);
+            Vector2 dir = new Vector2(Mathf.Abs(lastAttackDirection.x), lastAttackDirection.y);
+            animator.AttackDirection(dir);
+            Debug.Log("Attack Dir: " + dir);
         }
     }
 
@@ -638,7 +641,7 @@ public class Character : MonoBehaviour
         hitGrounds = Physics.BoxCastAll(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, Quaternion.identity, m.groundRaycastDown, m.groundMask, QueryTriggerInteraction.Ignore);
         for (int i = 0; i < hitGrounds.Length; i++)
         {
-            Debug.Log(hitGrounds[i].collider.gameObject.name);
+            //Debug.Log(hitGrounds[i].collider.gameObject.name);
         }
         return hitGrounds.Length > 0;
     }
