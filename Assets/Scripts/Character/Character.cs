@@ -118,7 +118,7 @@ public class Character : MonoBehaviour
     private bool nullInput => horizontalAxis == 0 && verticalAxis == 0;
     private bool nullVelocity => body.velocity == Vector3.zero;
 
-    private bool downButton = false;
+    public bool DownButton { get; private set; }
 
     private void DebugInput()
     {
@@ -157,7 +157,7 @@ public class Character : MonoBehaviour
 
     public void InputDownButton(bool down)
     {
-        downButton = down;
+        DownButton = down;
     }
 
     #endregion
@@ -269,7 +269,7 @@ public class Character : MonoBehaviour
 
         else
         {
-            if (downButton && walkingOnPassThroughPlatform)
+            if (DownButton && WalkingOnPassThroughPlatform)
             {
                 CanPassThrough(true);
                 stateMachine.ChangeState(CharacterState.Falling);
@@ -316,7 +316,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(strength);
 
 
-        if (jumpProgress > 1f)
+        if (jumpProgress > 1f ||CastCeiling())
         {
             SetVerticalVelocity(0);
             stateMachine.ChangeState(CharacterState.Falling);
@@ -355,9 +355,9 @@ public class Character : MonoBehaviour
             if (CastGround())
             {
                 bool land = false;
-                if (walkingOnPassThroughPlatform)
+                if (WalkingOnPassThroughPlatform)
                 {
-                    if (downButton)
+                    if (DownButton)
                     {
                         CanPassThrough(true);
                     }
@@ -384,7 +384,7 @@ public class Character : MonoBehaviour
             FallProgress += Time.deltaTime / m.timeToReachMaxFall;
             FallProgress = Mathf.Clamp01(FallProgress);
 
-            float mul = downButton ? 2 : 1;
+            float mul = DownButton ? 2 : 1;
 
             float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed * mul, m.fallCurve.Evaluate(FallProgress));
             SetVerticalVelocity(fall);
@@ -606,7 +606,7 @@ public class Character : MonoBehaviour
 
     public bool CastWall()
     {
-        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.wallMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -623,7 +623,7 @@ public class Character : MonoBehaviour
 
     #region Layer
 
-    private bool walkingOnPassThroughPlatform => hitGrounds.Length > 0 ? hitGrounds[0].collider.gameObject.layer == m.passThroughLayer : false;
+    public bool WalkingOnPassThroughPlatform => hitGrounds.Length > 0 ? hitGrounds[0].collider.gameObject.layer == m.passThroughLayerPlatform : false;
     private bool canPassThrough => gameObject.layer == m.passThroughLayer;
     private void CanPassThrough(bool pass)
     {

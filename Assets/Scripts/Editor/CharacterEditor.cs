@@ -39,6 +39,8 @@ public class CharacterEditor : Editor
         Label("Is Attacking", t.IsAttacking.ToString());
         Label("Horizontal Acceleration", t.XAccel.ToString());
         Label("Fall progress", t.FallProgress.ToString());
+        Label("Down Button", t.DownButton.ToString());
+        Label("Walking on passthrouh", t.WalkingOnPassThroughPlatform.ToString());
 
         EditorGUILayout.EndVertical();
     }

@@ -91,6 +91,7 @@ MonoBehaviour:
   downButtonFallSpeedMultiplier: 3
   defaultLayer: 0
   passThroughLayer: 12
+  passThroughLayerPlatform: 10
   fallThroughDuration: 0.5
   dodge:
     strength: 15
@@ -159,13 +160,16 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 1536
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 512
   groundCastRadius: 1.61
   castBoxWidth: 0.24
   groundRaycastDown: 0.82
   castGroundOrigin: 0.47
   castWallHeight: 0.23
   castWallLength: 1
-  castCeilingOrigin: 1.48
+  castCeilingOrigin: 1.13
   castCeilingLength: 0.54
   timeToReachMaxSlide: 1
   minWallSlideSpeed: 0.8
