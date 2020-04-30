@@ -50,14 +50,6 @@ public class Team
             Debug.Log(player.PlayerName + " left team " + index);
         }
     }
-
-    public void ToggleInputs(bool on)
-    {
-        for (int i = 0; i < players.Count; i++)
-        {
-            players[i].ToggleInputs(on);
-        }
-    }
 }
 
 public class TeamManager : MonoBehaviour
@@ -75,6 +67,8 @@ public class TeamManager : MonoBehaviour
     public static int TeamCount = 2;
     public List<Team> teams = new List<Team>();
     public List<Color> colors = new List<Color>();
+
+    public bool InputEnabled { get; private set; }
 
     public int GetIndex(NetworkedPlayer player)
     {
@@ -124,10 +118,7 @@ public class TeamManager : MonoBehaviour
 
     public void ToggleInputs(bool on)
     {
-        for (int i = 0; i < teams.Count; i++)
-        {
-            teams[i].ToggleInputs(on);
-        }
+        InputEnabled = on;
     }
 
     public void Score(int i)
