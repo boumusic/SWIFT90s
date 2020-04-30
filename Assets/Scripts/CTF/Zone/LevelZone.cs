@@ -26,7 +26,7 @@ public class LevelZone : MonoBehaviour
     {
         UpdateRadius();
 
-        NetworkStartPosition startPos = GetComponent<NetworkStartPosition>();
+        NetworkStartPosition startPos = GetComponentInChildren<NetworkStartPosition>();
 
         if (!startPos) return;
         startPos.Register(teamIndex);

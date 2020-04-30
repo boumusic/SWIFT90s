@@ -442,11 +442,6 @@ PrefabInstance:
       propertyPath: m_AfterStackBundles.Array.data[3].assemblyQualifiedName
       value: RandomGlitchPP, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       objectReference: {fileID: 0}
-    - target: {fileID: 5597224990623521311, guid: 847a57ae1011f7c43ba3eb87f7226ab1,
-        type: 3}
-      propertyPath: minZ
-      value: 7
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 847a57ae1011f7c43ba3eb87f7226ab1, type: 3}
 --- !u!4 &733075639678527307 stripped

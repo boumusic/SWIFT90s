@@ -54,6 +54,9 @@ public class UIManager : MonoBehaviour
     public GameOver gameOver;
 
     [Header("Portraits")]
+    public float portraitOffset = 20f;
+    public float portraitHeight = 20f;
+    public float portraitSpacing = 300f;
     public GameObject portraitPrefab;
     public Transform portraitParent;
     private List<PlayerPortrait> portraits = new List<PlayerPortrait>();
@@ -109,7 +112,7 @@ public class UIManager : MonoBehaviour
         Debug.Log("Refresh");
         for (int i = 0; i < portraits.Count; i++)
         {
-            Destroy(portraits[i]);
+            Destroy(portraits[i].gameObject);
         }
 
         portraits.Clear();
@@ -123,7 +126,11 @@ public class UIManager : MonoBehaviour
                 GameObject newPortrait = Instantiate(portraitPrefab, portraitParent);
                 PlayerPortrait portrait = newPortrait.GetComponent<PlayerPortrait>();
                 portraits.Add(portrait);
-                portrait.rect.anchoredPosition = Vector3.zero +Vector3.right *  index * 300;
+                Vector3 position = new Vector3(portraitOffset + index * 300 * (t == 0 ? 1 : -1), portraitHeight, 0);
+                portrait.rect.anchorMin = new Vector2(t, 0);
+                portrait.rect.anchorMax = new Vector2(t, 0);
+                portrait.rect.anchoredPosition = position;
+                portrait.UpdateVisuals(tm.teams[t].players[p].character);
                 index++;
             }
         }

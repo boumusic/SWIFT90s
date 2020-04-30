@@ -36,7 +36,7 @@ public class NetworkedPlayer : NetworkBehaviour
 
             UIManager.Instance.AssignPlayer(this);
 
-            character.animator.onAttackAnim += () => animator.SetTrigger("Attack");
+            //character.animator.onAttackEndAnim += () => animator.SetTrigger("Attack");
             character.animator.onDoubleJumpAnim += () => animator.SetTrigger("DoubleJump");
             character.animator.onJumpAnim += () => animator.SetTrigger("Jump");
             character.animator.onLandAnim += () => animator.SetTrigger("Land");
@@ -88,6 +88,11 @@ public class NetworkedPlayer : NetworkBehaviour
 
         character.InputHorizontal(horizontal);
         character.InputVertical(vertical);
+    }
+
+    private void OnDestroy()
+    {
+        Team.Leave(this);
     }
 
     [Command]

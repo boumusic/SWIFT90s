@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.5200005, y: 19.36}
-  m_SizeDelta: {x: 94.96, y: 138.72}
+  m_AnchoredPosition: {x: 32.66, y: 70.74}
+  m_SizeDelta: {x: 165.31, y: 241.49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7524459556560766363
 CanvasRenderer:
@@ -163,7 +163,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -28.5}
+  m_AnchoredPosition: {x: 37.5, y: -28.5}
   m_SizeDelta: {x: 246.41, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3869621174504955115
@@ -192,9 +192,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'KRUSHER99
-
-'
+  m_text: NAME
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1b40d3a8186cf6f44b772e83e4e83321, type: 2}
   m_sharedMaterial: {fileID: 6033043741865684567, guid: 1b40d3a8186cf6f44b772e83e4e83321,
@@ -264,9 +262,9 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 5377459377857772542}
-    characterCount: 10
+    characterCount: 4
     spriteCount: 0
-    spaceCount: 1
+    spaceCount: 0
     wordCount: 1
     linkCount: 0
     lineCount: 1
