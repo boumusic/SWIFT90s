@@ -31,7 +31,7 @@ public class Character : MonoBehaviour
     public GameObject flagBearerFx;
 
     [Header("Debug")]
-    private bool receiveDebugInput = false;
+    public bool receiveDebugInput = false;
     public bool drawAttackHitbox;
     public bool drawMovementHitbox;
 
