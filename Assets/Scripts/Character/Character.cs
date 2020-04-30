@@ -80,7 +80,6 @@ public class Character : MonoBehaviour
         stateMachine.ChangeState(CharacterState.Falling);
         ResetJumpCount();
 
-
         flagVisuals.Initialize(1 - TeamIndex);
         UpdateFlagVisuals();
         UpdateTexture();
@@ -105,7 +104,6 @@ public class Character : MonoBehaviour
         WallJumpUpdate();
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
 
-        flagBearerFx.SetActive(HasFlag);
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.G))
@@ -296,6 +294,7 @@ public class Character : MonoBehaviour
 
     public void ReceiveJumpInput()
     {
+        if (taunting) return;
         if (isWallSliding)
         {
             WallJump();
@@ -506,7 +505,7 @@ public class Character : MonoBehaviour
     private Vector3 attackDirection => nullInput ? nullVelocity ? ForwardNoZ : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private Vector3 lastAttackDirection;
     public bool IsAttacking { get; private set; }
-    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag;
+    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag && !taunting;
     private float attackProgress = 0f;
     private float attackCooldownProgress = 0f;
     private bool attackCooldownDone = true;
@@ -764,6 +763,37 @@ public class Character : MonoBehaviour
 
     #endregion
 
+    #region Taunt
+
+    private bool CanTaunt => grounded;
+    private bool taunting => CurrentState == CharacterState.Taunting;
+
+    public void Taunt()
+    {
+        if(CanTaunt)
+        {
+            stateMachine.ChangeState(CharacterState.Taunting);
+        }
+    }
+
+    private void Taunt_Enter()
+    {
+        StartCoroutine(TauntDuration());
+    }
+
+    private IEnumerator TauntDuration()
+    {
+        yield return new WaitForSeconds(2);
+        EndTaunt();
+    }
+
+    private void EndTaunt()
+    {
+        stateMachine.ChangeState(CharacterState.Grounded);
+    }
+
+    #endregion
+
     #region Team
 
     public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
@@ -804,6 +834,8 @@ public class Character : MonoBehaviour
         capturedAltar = altar;
         HasFlag = true;
         UpdateFlagVisuals();
+
+        flagBearerFx.SetActive(HasFlag);
     }
 
     public void DropFlag()
@@ -811,6 +843,8 @@ public class Character : MonoBehaviour
         capturedAltar?.ResetFlag();
         capturedAltar = null;
         HasFlag = false;
+
+        flagBearerFx.SetActive(HasFlag);
         UpdateFlagVisuals();
     }
 
@@ -877,5 +911,6 @@ public enum CharacterState
     Jumping,
     Falling,
     WallClimbing,
-    WallSliding
+    WallSliding,
+    Taunting
 }
