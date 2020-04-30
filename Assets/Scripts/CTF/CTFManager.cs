@@ -83,7 +83,7 @@ public class CTFManager : NetworkBehaviour
         //Game over
         //Spawn l'écran de victoire/défaite
         UIManager.Instance.DisplayEndgameScreen();
-
+        timer.Stop();
         TeamManager.Instance.ToggleInputs(false);
     }
 
