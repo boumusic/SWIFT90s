@@ -587,7 +587,7 @@ public class Character : MonoBehaviour
 
     public bool CastCeiling()
     {
-        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.wallMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
