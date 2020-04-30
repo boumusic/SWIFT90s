@@ -294,6 +294,7 @@ public class Character : MonoBehaviour
 
     public void ReceiveJumpInput()
     {
+        if (taunting) return;
         if (isWallSliding)
         {
             WallJump();
@@ -504,7 +505,7 @@ public class Character : MonoBehaviour
     private Vector3 attackDirection => nullInput ? nullVelocity ? ForwardNoZ : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private Vector3 lastAttackDirection;
     public bool IsAttacking { get; private set; }
-    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag;
+    private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag && !taunting;
     private float attackProgress = 0f;
     private float attackCooldownProgress = 0f;
     private bool attackCooldownDone = true;
@@ -765,18 +766,30 @@ public class Character : MonoBehaviour
     #region Taunt
 
     private bool CanTaunt => grounded;
-    
+    private bool taunting => CurrentState == CharacterState.Taunting;
+
     public void Taunt()
     {
         if(CanTaunt)
         {
-
+            stateMachine.ChangeState(CharacterState.Taunting);
         }
     }
 
     private void Taunt_Enter()
     {
+        StartCoroutine(TauntDuration());
+    }
 
+    private IEnumerator TauntDuration()
+    {
+        yield return new WaitForSeconds(2);
+        EndTaunt();
+    }
+
+    private void EndTaunt()
+    {
+        stateMachine.ChangeState(CharacterState.Grounded);
     }
 
     #endregion
