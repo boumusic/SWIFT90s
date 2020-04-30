@@ -17,6 +17,7 @@ public class NetworkedPlayer : NetworkBehaviour
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode attackKey = KeyCode.Mouse0;
     public KeyCode dodgeKey = KeyCode.Mouse1;
+    public KeyCode tauntKey = KeyCode.E;
     private bool inputEnabled => TeamManager.Instance.InputEnabled;
 
     Vector3 spawnPoint;
@@ -63,6 +64,11 @@ public class NetworkedPlayer : NetworkBehaviour
         if (Input.GetKeyDown(jumpKey))
         {
             character.ReceiveJumpInput();
+        }
+
+        if (Input.GetKeyDown(tauntKey))
+        {
+            character.Taunt();
         }
 
         if (Input.GetKeyDown(attackKey))
