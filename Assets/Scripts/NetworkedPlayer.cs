@@ -38,6 +38,8 @@ public class NetworkedPlayer : NetworkBehaviour
             username = FindObjectOfType<PlayerInfo>().username;
             character.UpdateTextName();
 
+            CmdUpdateName();
+
             spawnPosition = transform.position;
 
             UIManager.Instance.AssignPlayer(this);
@@ -51,6 +53,19 @@ public class NetworkedPlayer : NetworkBehaviour
         }
 
         TeamManager.Instance.JoinTeam(teamIndex, this);
+    }
+
+    [Command]
+    void CmdUpdateName()
+    {
+        RpcUpdateName();
+    }
+
+    [ClientRpc]
+    void RpcUpdateName()
+    {
+        character.UpdateTextName();
+        UIManager.Instance.RefreshPortraits();
     }
 
     private void Update()
