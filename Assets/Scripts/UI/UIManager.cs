@@ -143,7 +143,7 @@ public class UIManager : MonoBehaviour
                 GameObject newPortrait = Instantiate(portraitPrefab, portraitParent);
                 PlayerPortrait portrait = newPortrait.GetComponent<PlayerPortrait>();
                 portraits.Add(portrait);
-                Vector3 position = new Vector3(portraitOffset + index * 300 * (t == 0 ? 1 : -1), portraitHeight, 0);
+                Vector3 position = new Vector3(portraitOffset + index * portraitSpacing * (t == 0 ? 1 : -1) * Screen.width, portraitHeight, 0);
                 portrait.rect.anchorMin = new Vector2(t, 0);
                 portrait.rect.anchorMax = new Vector2(t, 0);
                 portrait.rect.anchoredPosition = position;

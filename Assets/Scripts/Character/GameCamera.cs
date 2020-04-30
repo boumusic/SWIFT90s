@@ -52,36 +52,51 @@ public class GameCamera : MonoBehaviour
 
     public Vector3 GetTopRightPoint()
     {
-        int topRightest = 0;
-        for (int i = 0; i < focusPoints.Count; i++)
+        if(focusPoints.Count > 0)
         {
-            if(focusPoints[i].transform.position.x >= focusPoints[topRightest].transform.position.x)
+            int topRightest = 0;
+            for (int i = 0; i < focusPoints.Count; i++)
             {
-                if (focusPoints[i].transform.position.y >= focusPoints[topRightest].transform.position.y)
+                if (focusPoints[i].transform.position.x >= focusPoints[topRightest].transform.position.x)
                 {
-                    topRightest = i;
+                    if (focusPoints[i].transform.position.y >= focusPoints[topRightest].transform.position.y)
+                    {
+                        topRightest = i;
+                    }
                 }
             }
-        }
 
-        return focusPoints[topRightest].transform.position;
+            return focusPoints[topRightest].transform.position;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
     }
 
     public Vector3 GetBottomLeftPoint()
     {
-        int bottomLeftest = 0;
-        for (int i = 0; i < focusPoints.Count; i++)
+        if (focusPoints.Count > 0)
         {
-            if (focusPoints[i].transform.position.x <= focusPoints[bottomLeftest].transform.position.x)
+            int bottomLeftest = 0;
+            for (int i = 0; i < focusPoints.Count; i++)
             {
-                if (focusPoints[i].transform.position.y <= focusPoints[bottomLeftest].transform.position.y)
+                if (focusPoints[i].transform.position.x <= focusPoints[bottomLeftest].transform.position.x)
                 {
-                    bottomLeftest = i;
+                    if (focusPoints[i].transform.position.y <= focusPoints[bottomLeftest].transform.position.y)
+                    {
+                        bottomLeftest = i;
+                    }
                 }
             }
+            return focusPoints[bottomLeftest].transform.position;
         }
 
-        return focusPoints[bottomLeftest].transform.position;
+        else
+        {
+            return Vector3.zero;
+        }
+        
     }
 
     public float GetGreatestDistance()
