@@ -1,6 +1,7 @@
 ﻿using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CTFManager : NetworkBehaviour
@@ -8,7 +9,12 @@ public class CTFManager : NetworkBehaviour
     private static CTFManager instance;
     public static CTFManager Instance
     {
-        get { if (!instance) instance = Resources.FindObjectsOfTypeAll<CTFManager>()[0]; return instance; }
+        get { return instance; }
+    }
+
+    public void Awake()
+    {
+        instance = this;
     }
 
     private List<LevelZone> zones = new List<LevelZone>();
@@ -31,9 +37,16 @@ public class CTFManager : NetworkBehaviour
         timer = null;
     }
 
+    public void ServerStartTimer()
+    {
+        Debug.Log("server is calling rpcstarttimer");
+        RpcStartTimer();
+    }
+
     [ClientRpc]
     public void RpcStartTimer()
     {
+        Debug.Log("start");
         Countdown.Instance.StartCountdown(3, ()=>
         {
             timer = new Timer(minutes, seconds, TimerOver);
@@ -43,6 +56,11 @@ public class CTFManager : NetworkBehaviour
 
         }, "FIGHT");
 
+    }
+
+    public void ServerUpdatePlayerCount(int playerCount, int maxPlayerCount)
+    {
+        RpcUpdatePlayerCount(playerCount, maxPlayerCount);
     }
 
     [ClientRpc]
@@ -133,25 +151,31 @@ public class CTFManager : NetworkBehaviour
     [ClientRpc]
     public void RpcSwitchLevelZonesSides()
     {
-        List<LevelZone> zones = new List<LevelZone>();
+        List<Shrine> shrines = new List<Shrine>();
+        List<Vector3> shrinePositions = new List<Vector3>();
 
-        List<Vector3> positions = new List<Vector3>();
+        List<Altar> altars = new List<Altar>();
+        List<Vector3> altarPositions = new List<Vector3>();
 
         foreach (var shrine in FindObjectsOfType<Shrine>())
         {
-            zones.Add(shrine);
-            positions.Add(shrine.transform.position);
+            shrines.Add(shrine);
+            shrinePositions.Add(shrine.transform.position);
         }
         foreach (var altar in FindObjectsOfType<Altar>())
         {
-            zones.Add(altar);
-            positions.Add(altar.transform.position);
+            altars.Add(altar);
+            altarPositions.Add(altar.transform.position);
         }
+        altars.OrderBy((x) => x.teamIndex);
 
-        zones[0].transform.position = positions[1];
-        zones[1].transform.position = positions[0];
-        zones[2].transform.position = positions[3];
-        zones[3].transform.position = positions[2];
+        shrines[0].transform.position = shrinePositions[1];
+        shrines[1].transform.position = shrinePositions[0];
+
+        altars[0].transform.position = altarPositions[2];
+        altars[1].transform.position = altarPositions[3];
+        altars[2].transform.position = altarPositions[0];
+        altars[3].transform.position = altarPositions[1];
     }
 
     private void InvertAllZones()

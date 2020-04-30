@@ -38,11 +38,11 @@ public class NetworkedPlayer : NetworkBehaviour
             UIManager.Instance.AssignPlayer(this);
 
             //character.animator.onAttackEndAnim += () => animator.SetTrigger("Attack");
-            character.animator.onDoubleJumpAnim += () => animator.SetTrigger("DoubleJump");
-            character.animator.onJumpAnim += () => animator.SetTrigger("Jump");
+            //character.animator.onDoubleJumpAnim += () => animator.SetTrigger("DoubleJump");
+            //character.animator.onJumpAnim += () => animator.SetTrigger("Jump");
             //character.animator.onLandAnim += () => animator.SetTrigger("Land");
-            character.animator.onDeathAnim += () => animator.SetTrigger("Death");
-            character.animator.onDodgeAnim += () => animator.SetTrigger("Dodge");
+            //character.animator.onDeathAnim += () => animator.SetTrigger("Death");
+            //character.animator.onDodgeAnim += () => animator.SetTrigger("Dodge");
         }
 
         TeamManager.Instance.JoinTeam(teamIndex, this);

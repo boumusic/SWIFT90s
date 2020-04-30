@@ -1,21 +1,33 @@
 ﻿using UnityEngine;
 using Mirror;
+using System.Collections;
 
 public class SwiftNetworkManager : NetworkManager
 {
+    public TeamManager teamManager;
+    public CTFManager ctfManager;
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        ctfManager.Awake();
+        teamManager.Awake();
+    }
+
     public override GameObject OnServerAddPlayer(NetworkConnection conn)
     {
         GameObject player = base.OnServerAddPlayer(conn);
 
-        player.GetComponent<NetworkedPlayer>().teamIndex = (conn.connectionId % 2 == 0) ? 0 : 1;
+        player.GetComponent<NetworkedPlayer>().teamIndex = (numPlayers % 2 == 0) ? 1 : 0;
 
         if (numPlayers == maxConnections)
         {
-            CTFManager.Instance.RpcStartTimer();
+            Debug.Log("trying server start timer");
+            CTFManager.Instance.ServerStartTimer();
         }
-        CTFManager.Instance.RpcUpdatePlayerCount(numPlayers, maxConnections);
+        CTFManager.Instance.ServerUpdatePlayerCount(numPlayers, maxConnections);
 
-        Debug.Log("ree");
         return player;
     }
 
@@ -23,13 +35,15 @@ public class SwiftNetworkManager : NetworkManager
     {
         base.OnServerDisconnect(conn);
 
-        CTFManager.Instance.RpcUpdatePlayerCount(numPlayers, maxConnections);
+        CTFManager.Instance.ServerUpdatePlayerCount(numPlayers, maxConnections);
+        UIManager.Instance.UpdatePlayerCounterUI(numPlayers, maxConnections);
     }
 
     public override void OnServerRemovePlayer(NetworkConnection conn, NetworkIdentity player)
     {
         base.OnServerRemovePlayer(conn, player);
 
-        CTFManager.Instance.RpcUpdatePlayerCount(numPlayers, maxConnections);
+        CTFManager.Instance.ServerUpdatePlayerCount(numPlayers, maxConnections);
+        UIManager.Instance.UpdatePlayerCounterUI(numPlayers, maxConnections);
     }
 }

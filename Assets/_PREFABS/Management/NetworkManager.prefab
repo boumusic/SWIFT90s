@@ -64,6 +64,8 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs: []
+  teamManager: {fileID: 0}
+  ctfManager: {fileID: 0}
 --- !u!114 &3256518655366009931
 MonoBehaviour:
   m_ObjectHideFlags: 0

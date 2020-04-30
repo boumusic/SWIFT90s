@@ -66,12 +66,9 @@ public class TeamManager : NetworkBehaviour
     private static TeamManager instance;
     public static TeamManager Instance
     {
-        get
-        {
-            if (!instance) instance = Resources.FindObjectsOfTypeAll<TeamManager>()[0];
-            return instance;
-        }
+        get { return instance; }
     }
+
 
     public static int TeamCount = 2;
     public List<Team> teams = new List<Team>();
@@ -115,8 +112,9 @@ public class TeamManager : NetworkBehaviour
         return 0;
     }
 
-    private void Awake()
+    public void Awake()
     {
+        instance = this;
         InitializeTeams();
     }
 

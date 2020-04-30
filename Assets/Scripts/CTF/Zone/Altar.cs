@@ -11,8 +11,10 @@ public class Altar : LevelZone
     private bool isEnabled = true;
     private bool captured = false;
 
-    public virtual void Awake()
+    public override void Awake()
     {
+        base.Awake();
+
         flag.Initialize(teamIndex);
     }
 
