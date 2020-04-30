@@ -31,6 +31,12 @@ public class Audio_Menu : MonoBehaviour
     {
         AudioManager.instance.PlaySoundFullRandom(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Dodge);
     }
+
+    public void PressButtonSound()
+    {
+
+        AudioManager.instance.PlaySoundRandomInList(AudioManager.instance.AS_Announcer, AudioManager.instance.AC_ButtonPress);
+    }
     // Update is called once per frame
     void Update()
     {

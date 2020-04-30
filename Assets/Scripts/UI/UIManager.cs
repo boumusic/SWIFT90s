@@ -58,7 +58,8 @@ public class UIManager : MonoBehaviour
     public float portraitHeight = 20f;
     public float portraitSpacing = 300f;
     public GameObject portraitPrefab;
-    public Transform portraitParent;
+    public Transform portraitRedParent;
+    public Transform portraitBlueParent;
     private List<PlayerPortrait> portraits = new List<PlayerPortrait>();
 
     [Header("Counter")]
@@ -146,14 +147,14 @@ public class UIManager : MonoBehaviour
         {
             for (int p = 0; p < tm.teams[t].players.Count; p++)
             {
-                GameObject newPortrait = Instantiate(portraitPrefab, portraitParent);
+                GameObject newPortrait = Instantiate(portraitPrefab);
                 PlayerPortrait portrait = newPortrait.GetComponent<PlayerPortrait>();
                 portraits.Add(portrait);
-                Vector3 position = new Vector3(portraitOffset + index * portraitSpacing * (t == 0 ? 1 : -1) * Screen.width, portraitHeight, 0);
-                portrait.rect.anchorMin = new Vector2(t, 0);
-                portrait.rect.anchorMax = new Vector2(t, 0);
-                portrait.rect.anchoredPosition = position;
+                if (t == 0) newPortrait.transform.parent = portraitRedParent;
+                else newPortrait.transform.parent = portraitBlueParent;
                 portrait.UpdateVisuals(tm.teams[t].players[p].character);
+                portrait.rect.anchoredPosition3D = new Vector3(0, 0, 0);
+                portrait.transform.localScale = Vector3.one;
                 index++;
             }
         }
