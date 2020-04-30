@@ -27,6 +27,7 @@ public class CharacterSettings : ScriptableObject
     [Header("Pass through Platform")]
     public int defaultLayer;
     public int passThroughLayer;
+    public int passThroughLayerPlatform = 10;
     public float fallThroughDuration = 0.5f;
 
     [Header("Dodge")]
@@ -35,18 +36,23 @@ public class CharacterSettings : ScriptableObject
 
     [Header("Cast")]
     public LayerMask groundMask;
+    public LayerMask wallMask;
+
     [Header("Ground")]
     public float groundCastRadius = 1;
     public float castBoxWidth = 1;
     public float groundRaycastDown = 1;
     public float castGroundOrigin = 1;
+
     [Header("Wall")]
+    public float castWallHeight = 0.7f;
     public float castWallLength = 1f;
+
     [Header("Ceiling")]
     public float castCeilingOrigin = 1;
     public float castCeilingLength = 1f;
 
-    [Header("Wallslide")]
+    [Header("Wallslide")]    
     public float timeToReachMaxSlide = 0.5f;
     public float minWallSlideSpeed = 4f;
     public float maxWallSlideSpeed = 4f;
