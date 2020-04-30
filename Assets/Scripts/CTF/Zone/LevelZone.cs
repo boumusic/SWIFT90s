@@ -20,9 +20,6 @@ public class LevelZone : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, radius);
         UpdateRadius();
 
-        NetworkStartPosition startPos = GetComponent<NetworkStartPosition>();
-        if (!startPos) return;
-        startPos.team = teamIndex;
     }
 
     private void Awake()
@@ -30,8 +27,9 @@ public class LevelZone : MonoBehaviour
         UpdateRadius();
 
         NetworkStartPosition startPos = GetComponent<NetworkStartPosition>();
+
         if (!startPos) return;
-        startPos.team = teamIndex;
+        startPos.Register(teamIndex);
     }
 
     private void OnEnable()

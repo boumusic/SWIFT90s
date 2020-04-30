@@ -36,6 +36,7 @@ public class Team
         if (!players.Contains(player))
         {
             players.Add(player);
+            UIManager.Instance.RefreshPortraits();
             //Debug.Log(player.PlayerName + " joined team " + index);
         }
     }
@@ -45,6 +46,7 @@ public class Team
         if (players.Contains(player))
         {
             players.Remove(player);
+            UIManager.Instance.RefreshPortraits();
             Debug.Log(player.PlayerName + " left team " + index);
         }
     }

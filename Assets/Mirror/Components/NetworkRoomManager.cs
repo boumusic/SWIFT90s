@@ -159,7 +159,7 @@ namespace Mirror
             if (gamePlayer == null)
             {
                 // get start position from base class
-                Transform startPos = GetStartPosition((conn.connectionId % 2 == 0) ? 0 : 1);
+                Transform startPos = GetStartPosition(0);
                 gamePlayer = startPos != null
                     ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                     : Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
@@ -280,12 +280,12 @@ namespace Mirror
         /// <para>The default implementation for this function creates a new player object from the playerPrefab.</para>
         /// </summary>
         /// <param name="conn">Connection from client.</param>
-        public override void OnServerAddPlayer(NetworkConnection conn)
+        public override GameObject OnServerAddPlayer(NetworkConnection conn)
         {
             if (IsSceneActive(RoomScene))
             {
                 if (roomSlots.Count == maxConnections)
-                    return;
+                    return null;
 
                 allPlayersReady = false;
 
@@ -299,6 +299,8 @@ namespace Mirror
             }
             else
                 OnRoomServerAddPlayer(conn);
+
+            return null;
         }
 
         public void RecalculateRoomPlayerIndices()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MonsterLove.StateMachine;
 using TMPro;
+using Mirror;
 
 public class Character : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class Character : MonoBehaviour
 
     [Header("Visuals")]
     public CharacterAnimator animator;
-    public Animator visuals;
+    public GameObject visuals;
     public CharacterFeedbacks fb;
     public Texture2D[] characterTextures;
     public Flag flagVisuals;
@@ -478,6 +479,7 @@ public class Character : MonoBehaviour
             attackCooldownDone = false;
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
+            animator.Attack();
         }
     }
 
@@ -498,7 +500,7 @@ public class Character : MonoBehaviour
                         {
                             if (!chara.IsDodging)
                             {
-                                Kill(chara);
+                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());
                             }
                         }
                     }
@@ -527,7 +529,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void Kill(Character chara)
+    public void Kill(Character chara)
     {
         if (!chara.IsDead)
         {
@@ -701,7 +703,7 @@ public class Character : MonoBehaviour
     #region Team
 
     public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
-    public int TeamIndex => player.TeamIndex;
+    public int TeamIndex => player.teamIndex;
 
     public string PlayerName => "KRUSHER98";
 
