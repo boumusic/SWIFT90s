@@ -6372,6 +6372,11 @@ PrefabInstance:
       propertyPath: serverOnly
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2538916938449582085, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2779491672305203224, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: sceneId
@@ -6385,11 +6390,6 @@ PrefabInstance:
     - target: {fileID: 3408004051503652126, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: teams.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3857582240084677124, guid: fe885c7988dba0b4787a4363457a571e,
-        type: 3}
-      propertyPath: minutes
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6945832414565111299, guid: fe885c7988dba0b4787a4363457a571e,
@@ -6414,8 +6414,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7959922905249195885, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
-      propertyPath: lan
-      value: 1
+      propertyPath: onlineScene
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7959922905249195885, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: offlineScene
+      value: Assets/_SCENES/MainMenu.unity
       objectReference: {fileID: 0}
     - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}

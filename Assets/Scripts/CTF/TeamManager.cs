@@ -56,7 +56,7 @@ public class Team
         {
             players.Remove(player);
             UIManager.Instance.RefreshPortraits();
-            Debug.Log(player.PlayerName + " left team " + index);
+            Debug.Log(player.username + " left team " + index);
         }
     }
 }

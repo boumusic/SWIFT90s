@@ -7,10 +7,11 @@ public class NetworkedPlayer : NetworkBehaviour
 {
     [SyncVar]
     public int teamIndex;
+    [SyncVar]
+    public string username;
 
     public Character character;
     public NetworkAnimator animator;
-    public string PlayerName => character.PlayerName;
     public Team Team => TeamManager.Instance.teams[teamIndex];
 
     [Header("Inputs")]
@@ -34,6 +35,9 @@ public class NetworkedPlayer : NetworkBehaviour
         }
         else
         {
+            username = FindObjectOfType<PlayerInfo>().username;
+            character.UpdateTextName();
+
             spawnPosition = transform.position;
 
             UIManager.Instance.AssignPlayer(this);

@@ -101,6 +101,18 @@ AudioManager.instance.PlayMusic(AudioManager.instance.AC_BattleTheme, 0.7f);
         UIManager.Instance.DisplayEndgameScreen();
         timer.Stop();
         TeamManager.Instance.ToggleInputs(false);
+
+        if (isServer)
+        {
+            StartCoroutine(CloseServerRoutine());
+        }
+    }
+
+    IEnumerator CloseServerRoutine()
+    {
+        yield return new WaitForSeconds(5);
+
+        NetworkManager.singleton.StopHost();
     }
 
     private void StartHalfTime()

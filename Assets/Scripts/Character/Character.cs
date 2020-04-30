@@ -828,7 +828,7 @@ public class Character : MonoBehaviour
     public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
     public int TeamIndex => player.teamIndex;
 
-    public string PlayerName => "KRUSHER98";
+    public string PlayerName => player.username;
 
     public void UpdateTexture()
     {
