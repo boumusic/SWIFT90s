@@ -63,7 +63,7 @@ MonoBehaviour:
   aerialAcceleration: 6
   aerialDeceleration: 1.02
   timeToReachMaxFall: 0.6
-  maxFallSpeed: 20
+  maxFallSpeed: 15
   fallCurve:
     serializedVersion: 2
     m_Curve:
@@ -88,7 +88,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  downButtonFallSpeedMultiplier: 2.5
+  downButtonFallSpeedMultiplier: 2
   defaultLayer: 0
   passThroughLayer: 12
   passThroughLayerPlatform: 10

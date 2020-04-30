@@ -99,6 +99,18 @@ public class UIManager : MonoBehaviour
     {
         bool won = Player.Team.HasWon;
         gameOver.DisplayGameOver(won);
+
+        AudioManager AM = AudioManager.instance;
+
+        if(won)
+        {
+            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Victory);
+        }
+
+        else
+        {
+            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Defeat);
+        }
     }
 
     private IEnumerator HalfTimeDuration()

@@ -99,6 +99,7 @@ public class NetworkedPlayer : NetworkBehaviour
     [Command]
     public void CmdKillPlayer(NetworkIdentity killerID, NetworkIdentity victimID)
     {
+        Debug.Log(victimID);
         RpcKillPlayer(killerID, victimID);
     }
 
