@@ -8,7 +8,7 @@ public class CTFManager : NetworkBehaviour
     private static CTFManager instance;
     public static CTFManager Instance
     {
-        get { if (!instance) instance = FindObjectOfType<CTFManager>(); return instance; }
+        get { if (!instance) instance = Resources.FindObjectsOfTypeAll<CTFManager>()[0]; return instance; }
     }
 
     private List<LevelZone> zones = new List<LevelZone>();
@@ -18,43 +18,42 @@ public class CTFManager : NetworkBehaviour
     public int seconds = 0;
     public int goalPoints = 3;
 
+    public float respawnTimer;
+
     public float halfTimeDuration = 5f;
     private bool reachedHalfTime = false;
 
     private Timer timer;
     public Timer Timer => timer;
 
-    [SyncVar]
-    private float serverTime;
-
-    private void Start()
+    private void OnEnable()
     {
-        timer = new Timer(minutes, seconds, TimerOver);
-        Countdown.Instance.StartCountdown(3, StartTimer, "FIGHT");
+        timer = null;
     }
 
-    private void StartTimer()
+    [ClientRpc]
+    public void RpcStartTimer()
     {
-        if (isServer)
+        Countdown.Instance.StartCountdown(3, ()=>
         {
             timer = new Timer(minutes, seconds, TimerOver);
             timer.Start();
-        }
-        else
-        {
-            timer = new Timer(minutes, seconds, TimerOver);
-            timer.TimeLeft = serverTime;
-        }
+
+            TeamManager.Instance.ToggleInputs(true);
+
+        }, "FIGHT");
+
+    }
+
+    [ClientRpc]
+    public void RpcUpdatePlayerCount(int playerCount, int maxPlayerCount)
+    {
+        UIManager.Instance.UpdatePlayerCounterUI(playerCount, maxPlayerCount);
     }
 
     private void Update()
     {
-        timer.Update();
-
-        if (isServer)
-        {
-            serverTime = timer.TimeLeft;
-        }
+        timer?.Update();
     }
 
     private bool isDraw = false;
@@ -115,12 +114,51 @@ public class CTFManager : NetworkBehaviour
 
     private IEnumerator HalfTime()
     {
+        if (isServer)
+        {
+            RpcSwitchLevelZonesSides();
+            foreach (var player in FindObjectsOfType<NetworkedPlayer>())
+            {
+                player.RpcSwitchSides();
+            }
+        }
+        
         yield return new WaitForSeconds(halfTimeDuration);
 
-        //Enable les Inputs
-        TeamManager.Instance.ToggleInputs(true);
 
-        StartTimer();
+        Countdown.Instance.StartCountdown(3, () =>
+        {
+            timer = new Timer(minutes, seconds, TimerOver);
+            timer.Start();
+
+            TeamManager.Instance.ToggleInputs(true);
+
+        }, "FIGHT");
+
+    }
+
+    [ClientRpc]
+    public void RpcSwitchLevelZonesSides()
+    {
+        List<LevelZone> zones = new List<LevelZone>();
+
+        List<Vector3> positions = new List<Vector3>();
+
+        foreach (var shrine in FindObjectsOfType<Shrine>())
+        {
+            zones.Add(shrine);
+            positions.Add(shrine.transform.position);
+        }
+        foreach (var altar in FindObjectsOfType<Altar>())
+        {
+            zones.Add(altar);
+            positions.Add(altar.transform.position);
+        }
+
+        zones[0].transform.position = positions[1];
+        zones[1].transform.position = positions[0];
+        zones[2].transform.position = positions[3];
+        zones[3].transform.position = positions[2];
     }
 
     private void InvertAllZones()

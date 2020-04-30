@@ -10,7 +10,7 @@ public class Altar : LevelZone
     private bool isEnabled = true;
     private bool captured = false;
 
-    private void Awake()
+    public virtual void Awake()
     {
         flag.Initialize(teamIndex);
     }
@@ -21,8 +21,8 @@ public class Altar : LevelZone
         if(!character.HasFlag && isEnabled && character.TeamIndex != teamIndex && !character.IsDead)
         {
             character.CaptureFlag(this);
-            UpdateFlag();
             captured = true;
+            UpdateFlag();
             CTFManager.Instance.CapturedFlagOfTeam(teamIndex);
         }
     }

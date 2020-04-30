@@ -515,6 +515,8 @@ public class Character : MonoBehaviour
     {
         if (CanAttack)
         {
+            charactersHitThisAttack.Clear();
+
             lastAttackDirection = attackDirection;
             IsAttacking = true;
             attackProgress = 0f;
@@ -525,6 +527,7 @@ public class Character : MonoBehaviour
         }
     }
 
+    List<Character> charactersHitThisAttack = new List<Character>();
     private void AttackUpdate()
     {
         if (IsAttacking)
@@ -540,8 +543,10 @@ public class Character : MonoBehaviour
                     {
                         if (chara != this && chara.TeamIndex != TeamIndex)
                         {
-                            if (!chara.IsDodging && !IsDead)
+                            if (!chara.IsDodging && !IsDead && !charactersHitThisAttack.Contains(chara))
                             {
+                                charactersHitThisAttack.Add(chara);
+
                                 AudioManager.instance.PlaySound(AudioManager.instance.AS_Fight, AudioManager.instance.AC_Hit);
                                 AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Kill);
                                 player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());
@@ -865,7 +870,22 @@ public class Character : MonoBehaviour
             fb.Play("Death");
             DropFlag();
             AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Death);
+
+            defaultCollider.enabled = false;
+
+            StartCoroutine(DeathTimerRoutine());
         }
+    }
+
+    IEnumerator DeathTimerRoutine()
+    {
+        yield return new WaitForSecondsRealtime(CTFManager.Instance.respawnTimer);
+
+        transform.position = player.spawnPosition;
+
+        visuals.gameObject.SetActive(true);
+        IsDead = false;
+        defaultCollider.enabled = true;
     }
 
     #endregion

@@ -19,7 +19,7 @@ public class NetworkedPlayer : NetworkBehaviour
     public KeyCode dodgeKey = KeyCode.Mouse1;
     private bool inputEnabled => TeamManager.Instance.InputEnabled;
 
-    Vector3 spawnPoint;
+    [HideInInspector] public Vector3 spawnPosition;
 
     private void Start()
     {
@@ -33,14 +33,14 @@ public class NetworkedPlayer : NetworkBehaviour
         }
         else
         {
-            spawnPoint = transform.position;
+            spawnPosition = transform.position;
 
             UIManager.Instance.AssignPlayer(this);
 
             //character.animator.onAttackEndAnim += () => animator.SetTrigger("Attack");
             character.animator.onDoubleJumpAnim += () => animator.SetTrigger("DoubleJump");
             character.animator.onJumpAnim += () => animator.SetTrigger("Jump");
-            character.animator.onLandAnim += () => animator.SetTrigger("Land");
+            //character.animator.onLandAnim += () => animator.SetTrigger("Land");
             character.animator.onDeathAnim += () => animator.SetTrigger("Death");
             character.animator.onDodgeAnim += () => animator.SetTrigger("Dodge");
         }
@@ -58,7 +58,12 @@ public class NetworkedPlayer : NetworkBehaviour
 
     private void Inputs()
     {
-        if (!inputEnabled) return;
+        if (!inputEnabled)
+        {
+            character.InputHorizontal(0);
+            character.InputVertical(0);
+            return;
+        }
 
         if (Input.GetKeyDown(jumpKey))
         {
@@ -98,5 +103,26 @@ public class NetworkedPlayer : NetworkBehaviour
     public void RpcKillPlayer(NetworkIdentity killerID, NetworkIdentity victimID)
     {
         character.Kill(victimID.gameObject.GetComponent<Character>());
+    }
+
+    [ClientRpc]
+    public void RpcRespawn()
+    {
+        character.DropFlag();
+
+        transform.position = spawnPosition;
+
+    }
+
+    [ClientRpc]
+    public void RpcSwitchSides()
+    {
+        character.DropFlag();
+
+        if (!hasAuthority) return;
+
+        transform.position = teamIndex == 0 ? NetworkManager.startPosition0.position : NetworkManager.startPosition1.position;
+
+        spawnPosition = transform.position;
     }
 }
