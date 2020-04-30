@@ -20,8 +20,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip AC_ScoreAlly_01, AC_ScoreAlly_02, AC_ScoreAlly_03, AC_ScoreEnemy_01, AC_ScoreEnemy_02, AC_ScoreEnemy_03;
 
     [Header("Audioclips - Announcer")]
-    public AudioClip AC_Countdown_3, AC_Countdown_2, AC_Countdown_1, AC_Countdown_Go, AC_Countdown_Fight;
-    public AudioClip[] AC_Defeat, AC_Victory, AC_Draw, AC_SuddenDeath;
+    public AudioClip AC_Countdown_3, AC_Countdown_2, AC_Countdown_1, AC_Countdown_Go, AC_Countdown_Fight, AC_RefereeWhistle;
+    public AudioClip[] AC_Defeat, AC_Victory, AC_Draw, AC_HalfTime, AC_SuddenDeath;
 
     [Header("Audioclips - UI")]
     public AudioClip[] AC_ButtonPress;
@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySound(AudioSource audiosource, AudioClip audioclip)
     {
-       
+        audiosource.pitch = 1;
         audiosource.clip = audioclip;
         audiosource.Play();
     }
@@ -51,6 +51,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySoundRandomInList(AudioSource audiosource, AudioClip[] audioClips)
     {
+        audiosource.pitch = 1;
         audiosource.clip = audioClips[Random.Range(0, audioClips.Length)];
         audiosource.Play();
     }
@@ -70,9 +71,11 @@ public class AudioManager : MonoBehaviour
         AS_Loop.Play();
     }
 
-    public void PlayMusic(AudioClip audioclip)
+    public void PlayMusic(AudioClip audioclip, float newVolume)
     {
+        AS_Music.Stop();
         AS_Music.clip = audioclip;
+        AS_Music.volume = newVolume;
         AS_Music.Play();
     }
     public void MuteAudioSource(AudioSource audiosource, bool muteorno)
@@ -90,7 +93,7 @@ public class AudioManager : MonoBehaviour
             yield return null;
         }
 
-
+        Debug.Log("FadeOut done");
         audiosource.Stop();
         audiosource.volume = musicVolume;
     }
@@ -99,7 +102,7 @@ public class AudioManager : MonoBehaviour
     {
        if(audiosource.volume > 0)
         {
-            FadeOut(audiosource, 0.5f);
+            FadeOut(audiosource, 1f);
         }
 
         audiosource.volume = 0f;
