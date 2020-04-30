@@ -28,6 +28,7 @@ public class Character : MonoBehaviour
 
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
+    public GameObject flagBearerFx;
 
     [Header("Debug")]
     private bool receiveDebugInput = false;
@@ -103,6 +104,8 @@ public class Character : MonoBehaviour
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
         WallJumpUpdate();
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
+
+        flagBearerFx.SetActive(HasFlag);
     }
 
     private void OnDrawGizmos()
@@ -768,15 +771,19 @@ public class Character : MonoBehaviour
     #region Flag
 
     public bool HasFlag { get; private set; }
+    private Altar capturedAltar;
 
-    public void CaptureFlag()
+    public void CaptureFlag(Altar altar)
     {
+        capturedAltar = altar;
         HasFlag = true;
         UpdateFlagVisuals();
     }
 
     public void DropFlag()
     {
+        capturedAltar?.ResetFlag();
+        capturedAltar = null;
         HasFlag = false;
         UpdateFlagVisuals();
     }
@@ -793,6 +800,7 @@ public class Character : MonoBehaviour
             visuals.gameObject.SetActive(false);
             IsDead = true;
             fb.Play("Death");
+            HasFlag = false;
         }
     }
 
