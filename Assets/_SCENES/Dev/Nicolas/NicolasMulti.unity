@@ -1688,6 +1688,56 @@ PrefabInstance:
       propertyPath: m_Name
       value: ESSENTIALS
       objectReference: {fileID: 0}
+    - target: {fileID: 868440190611453391, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 868440190611453391, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.spaceCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 868440190611453391, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 868440190611453391, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 868440190611453391, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.spaceCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8735029051153765761, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: m_LocalScale.x

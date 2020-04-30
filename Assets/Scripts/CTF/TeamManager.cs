@@ -12,7 +12,7 @@ public class Team
     public int Score { get => score; set => score = value; }
 
     public bool HasWon { get; private set; }
-    private int score;
+    public int score;
     private Color color;
 
     public void EarnPoint(int point = 1)
@@ -85,6 +85,7 @@ public class TeamManager : MonoBehaviour
 
     private void Awake()
     {
+        InputEnabled = true;
         InitializeTeams();
     }
 

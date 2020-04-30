@@ -1010,7 +1010,7 @@ MonoBehaviour:
   AC_JoinTheGame: {fileID: 8300000, guid: cc4f3196b1c569b47b34e06a15ad444e, type: 3}
   AC_MenuTheme: {fileID: 8300000, guid: 09f32699d570c2443804a3b5971bca81, type: 3}
   AC_BattleTheme: {fileID: 8300000, guid: 0a3b7bce8bcd4264096ebe3156982a42, type: 3}
-  AC_EndTheme: {fileID: 8300000, guid: c9f216a19e3932141bc330c04e4acc80, type: 3}
+  AC_EndTheme: {fileID: 8300000, guid: e897970144b7ff043a9fa5e64b3dac6d, type: 3}
 --- !u!114 &8820526452697323074
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -114,6 +114,8 @@ public class UIManager : MonoBehaviour
         {
             AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_Defeat);
         }
+
+        AudioManager.instance.StartCoroutine(AudioManager.instance.FadeIn(AudioManager.instance.AS_Music, AudioManager.instance.AC_EndTheme, 1f, 0.7f));
     }
 
     private IEnumerator HalfTimeDuration()

@@ -108,7 +108,7 @@ public class Character : MonoBehaviour
         flagBearerFx.SetActive(HasFlag);
 
 #if UNITY_EDITOR
-        if(Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G))
         {
             Die();
         }
@@ -119,7 +119,7 @@ public class Character : MonoBehaviour
     {
         DrawBox();
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
+        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + ForwardNoZ * m.castWallLength * Mathf.Abs(horizontalAxis));
     }
 
     #endregion
@@ -446,7 +446,7 @@ public class Character : MonoBehaviour
             leavingWallSlide = StartCoroutine(LeavingWallSlide());
         }
 
-        if(CastWall())
+        if (CastWall())
         {
             if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
         }
@@ -481,7 +481,8 @@ public class Character : MonoBehaviour
     private void WallJump()
     {
         Vector3 jumpDir = (hitWall.normal + Vector3.up).normalized;
-        p.RegisterPropulsion(jumpDir, m.wallJump, EndWallJump);
+        Vector3 noZ = new Vector3(jumpDir.x, jumpDir.y, 0);
+        p.RegisterPropulsion(noZ, m.wallJump, EndWallJump);
         animator.WallJump();
         wallJumping = true;
     }
@@ -489,7 +490,7 @@ public class Character : MonoBehaviour
     private void WallJumpUpdate()
     {
         //if (wallJumping)
-            //FlipVisuals(true);
+        //FlipVisuals(true);
     }
 
     private void EndWallJump()
@@ -502,7 +503,7 @@ public class Character : MonoBehaviour
 
     #region Attack
 
-    private Vector3 attackDirection => nullInput ? nullVelocity ? transform.forward : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+    private Vector3 attackDirection => nullInput ? nullVelocity ? ForwardNoZ : body.velocity.normalized : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private Vector3 lastAttackDirection;
     public bool IsAttacking { get; private set; }
     private bool CanAttack => !IsDodging && attackCooldownDone && !HasFlag;
@@ -543,7 +544,7 @@ public class Character : MonoBehaviour
                             {
                                 AudioManager.instance.PlaySound(AudioManager.instance.AS_Fight, AudioManager.instance.AC_Hit);
                                 AudioManager.instance.PlaySoundRandomPitch(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_Kill);
-                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());                                
+                                player.CmdKillPlayer(player.netIdentity, chara.GetComponent<NetworkIdentity>());
                             }
                         }
                     }
@@ -554,6 +555,10 @@ public class Character : MonoBehaviour
             attackProgress += Time.deltaTime / m.attackDuration;
             if (attackProgress >= 1)
             {
+                if (IsAttacking)
+                {
+                    ResetFallProgress();
+                }
                 animator.Attacking(false);
                 IsAttacking = false;
             }
@@ -669,7 +674,8 @@ public class Character : MonoBehaviour
 
     #region Dodge
 
-    private Vector3 dodgeDirection => nullInput ? transform.forward : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
+    private Vector3 ForwardNoZ => new Vector3(transform.forward.x, transform.forward.y, 0).normalized;
+    private Vector3 dodgeDirection => nullInput ? ForwardNoZ : new Vector3(horizontalAxis, verticalAxis, 0).normalized;
     private bool dodgeCooldownDone = true;
     private float dodgeCooldownProgress = 0f;
     private bool canDodge => dodgeCooldownDone && !IsAttacking;
@@ -784,6 +790,17 @@ public class Character : MonoBehaviour
 
     public void CaptureFlag(Altar altar)
     {
+        //SAME TEAM
+        if (UIManager.Instance.Player.teamIndex == TeamIndex)
+        {
+            AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_FlagTookAlly);
+        }
+
+        else
+        {
+            AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_FlagTookEnemy);
+        }
+
         capturedAltar = altar;
         HasFlag = true;
         UpdateFlagVisuals();
@@ -795,6 +812,43 @@ public class Character : MonoBehaviour
         capturedAltar = null;
         HasFlag = false;
         UpdateFlagVisuals();
+    }
+
+    public void Score()
+    {
+        //SAME TEAM
+        if (UIManager.Instance.Player.teamIndex == TeamIndex)
+        {
+            if (player.Team.Score == 0)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_01);
+            if (player.Team.Score == 1)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_02);
+            if (player.Team.Score == 2)
+            {
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Loop, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Movement, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Fight, true);
+                AudioManager.instance.FadeOut(AudioManager.instance.AS_Music, 0.6f);
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_03);
+            }
+        }
+
+        //ENEMY TEAM
+        else
+        {
+            if (player.Team.Score == 0)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreEnemy_01);
+            if (player.Team.Score == 1)
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreEnemy_02);
+            if (player.Team.Score == 2)
+            {
+                AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreEnemy_03);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Loop, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Movement, true);
+                AudioManager.instance.MuteAudioSource(AudioManager.instance.AS_Fight, true);
+                AudioManager.instance.FadeOut(AudioManager.instance.AS_Music, 0.6f);
+            }
+        }
     }
 
     #endregion
