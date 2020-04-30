@@ -61,6 +61,12 @@ public class CharacterAnimator : MonoBehaviour
         }
     }
 
+    public void AttackDirection(Vector2 dir)
+    {
+        Float("x", dir.x);
+        Float("y", dir.y);
+    }
+
     public void Jump(bool doubleJ)
     {
         if (doubleJ)

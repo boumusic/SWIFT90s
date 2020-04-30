@@ -29,6 +29,11 @@ public class Timer
         isStarted = true;
     }
 
+    public void Stop()
+    {
+        isStarted = false;
+    }
+
     public void Update()
     {
         if(isStarted)

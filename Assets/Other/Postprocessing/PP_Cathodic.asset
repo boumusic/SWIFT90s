@@ -87,7 +87,7 @@ MonoBehaviour:
     value: 1
   resolution:
     overrideState: 1
-    value: 500
+    value: 1529
 --- !u!114 &-5965731010912656140
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -138,7 +138,7 @@ MonoBehaviour:
     value: 1
   distort:
     overrideState: 1
-    value: 0.0007
+    value: 0.0004
   tiling:
     overrideState: 1
     value: 3000
@@ -1601,7 +1601,7 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 28.5
+    value: 15
   intensityX:
     overrideState: 0
     value: 1

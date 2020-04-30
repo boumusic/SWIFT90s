@@ -3,6 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Outcome
+{
+    Defeat,
+    Victory,
+    Draw
+}
+
 [System.Serializable]
 public class Team
 {
@@ -12,7 +19,8 @@ public class Team
     public Color Color { get => color; }
     public int Score { get => score; set => score = value; }
 
-    public bool HasWon { get; private set; }
+    public Outcome outcome;
+    //public bool HasWon { get; private set; }
     public int score;
     private Color color;
 
@@ -21,7 +29,7 @@ public class Team
         score += point;
         if (score >= CTFManager.Instance.goalPoints)
         {
-            HasWon = true;
+            outcome = Outcome.Victory;
             CTFManager.Instance.TeamWins(this);
         }
     }
@@ -68,6 +76,28 @@ public class TeamManager : NetworkBehaviour
     public static int TeamCount = 2;
     public List<Team> teams = new List<Team>();
     public List<Color> colors = new List<Color>();
+
+    public bool IsDraw
+    {
+        get
+        {
+            if(teams.Count > 0)
+            {
+                int team0Score = teams[0].score;
+                for (int i = 0; i < teams.Count; i++)
+                {
+                    if(teams[i].score != team0Score)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     public bool InputEnabled { get; private set; }
 

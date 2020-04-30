@@ -583,7 +583,7 @@ MonoBehaviour:
   gameOver: {fileID: 758235620589672525}
   portraitOffset: 70
   portraitHeight: 0
-  portraitSpacing: 300
+  portraitSpacing: 0.5
   portraitPrefab: {fileID: 7271756575833014155, guid: 316be43efdcb4c8428573033afd85666,
     type: 3}
   portraitParent: {fileID: 3988394360875238330}
@@ -2688,6 +2688,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929164949265696706, guid: 662e397ac4a865b4d85fc53f87951ae1,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.76602
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929164949265696706, guid: 662e397ac4a865b4d85fc53f87951ae1,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.76602
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929164949265696706, guid: 662e397ac4a865b4d85fc53f87951ae1,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.76602
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 662e397ac4a865b4d85fc53f87951ae1, type: 3}
