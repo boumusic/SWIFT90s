@@ -9,7 +9,8 @@ public class CharacterAnimator : MonoBehaviour
 
     public Action onLandAnim;
     public Action onJumpAnim;
-    public Action onAttackAnim;
+    public Action onAttackStartAnim;
+    public Action onAttackEndAnim;
     public Action onDeathAnim;
     public Action onDoubleJumpAnim;
     public Action onDodgeAnim;
@@ -46,10 +47,18 @@ public class CharacterAnimator : MonoBehaviour
         Bool("isGrounded", value);
     }
 
-    public void Attack()
+    public void Attacking(bool attack)
     {
-        Trigger("Attack");
-        onAttackAnim?.Invoke();
+        Bool("IsAttacking", attack);
+        if (attack)
+        {
+            onAttackStartAnim?.Invoke();
+        }
+
+        else
+        {
+            onAttackEndAnim?.Invoke();
+        }
     }
 
     public void Jump(bool doubleJ)

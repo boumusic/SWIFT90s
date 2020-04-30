@@ -510,7 +510,7 @@ public class Character : MonoBehaviour
             attackCooldownDone = false;
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
-            animator.Attack();
+            animator.Attacking(true);
         }
     }
 
@@ -527,7 +527,7 @@ public class Character : MonoBehaviour
                     Character chara;
                     if (hitsAttack[i].collider.TryGetComponent(out chara))
                     {
-                        if (chara != this)
+                        if (chara != this && chara.TeamIndex != TeamIndex)
                         {
                             if (!chara.IsDodging)
                             {
@@ -542,6 +542,7 @@ public class Character : MonoBehaviour
             attackProgress += Time.deltaTime / m.attackDuration;
             if (attackProgress >= 1)
             {
+                animator.Attacking(false);
                 IsAttacking = false;
             }
         }
@@ -645,7 +646,7 @@ public class Character : MonoBehaviour
 
     #region Layer
 
-    public bool WalkingOnPassThroughPlatform => hitGrounds.Length > 0 ? hitGrounds[0].collider.gameObject.layer == m.passThroughLayerPlatform : false;
+    public bool WalkingOnPassThroughPlatform => hitGrounds != null ? (hitGrounds.Length > 0 ? hitGrounds[0].collider.gameObject.layer == m.passThroughLayerPlatform : false) : false;
     private bool canPassThrough => gameObject.layer == m.passThroughLayer;
     private void CanPassThrough(bool pass)
     {

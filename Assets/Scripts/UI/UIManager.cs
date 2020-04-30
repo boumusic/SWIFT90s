@@ -112,7 +112,7 @@ public class UIManager : MonoBehaviour
         Debug.Log("Refresh");
         for (int i = 0; i < portraits.Count; i++)
         {
-            Destroy(portraits[i]);
+            Destroy(portraits[i].gameObject);
         }
 
         portraits.Clear();
@@ -129,6 +129,7 @@ public class UIManager : MonoBehaviour
                 Vector3 position0 = new Vector3(portraitOffset + index * 300, portraitHeight, 0);
                 Vector3 position1 = new Vector3(Screen.width - portraitOffset - index * 300, portraitHeight, 0);
                 portrait.rect.anchoredPosition = t == 0? position0 : position1;
+                portrait.UpdateVisuals(tm.teams[t].players[p].character);
                 index++;
             }
         }
