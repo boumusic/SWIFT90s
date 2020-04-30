@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CTFManager : MonoBehaviour
+public class CTFManager : NetworkBehaviour
 {
     private static CTFManager instance;
     public static CTFManager Instance
@@ -23,6 +24,9 @@ public class CTFManager : MonoBehaviour
     private Timer timer;
     public Timer Timer => timer;
 
+    [SyncVar]
+    private float serverTime;
+
     private void Start()
     {
         timer = new Timer(minutes, seconds, TimerOver);
@@ -31,12 +35,26 @@ public class CTFManager : MonoBehaviour
 
     private void StartTimer()
     {
-        timer.Start();
+        if (isServer)
+        {
+            timer = new Timer(minutes, seconds, TimerOver);
+            timer.Start();
+        }
+        else
+        {
+            timer = new Timer(minutes, seconds, TimerOver);
+            timer.TimeLeft = serverTime;
+        }
     }
 
     private void Update()
     {
-        timer?.Update();
+        timer.Update();
+
+        if (isServer)
+        {
+            serverTime = timer.TimeLeft;
+        }
     }
 
     private bool isDraw = false;
