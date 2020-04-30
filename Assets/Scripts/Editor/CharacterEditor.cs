@@ -38,6 +38,7 @@ public class CharacterEditor : Editor
         Label("Horizontal Axis", t.HorizontalAxis.ToString());
         Label("Is Attacking", t.IsAttacking.ToString());
         Label("Horizontal Acceleration", t.XAccel.ToString());
+        Label("Fall progress", t.FallProgress.ToString());
 
         EditorGUILayout.EndVertical();
     }
