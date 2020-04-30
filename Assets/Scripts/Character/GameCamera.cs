@@ -14,6 +14,7 @@ public class GameCamera : MonoBehaviour
     [SerializeField] private float minZ = 7;
     [SerializeField] private float maxZ = 30f;
     [SerializeField] private float maxPlayerDistance = 30f;
+    [SerializeField] private float yOffset = 1f;
 
     private List<CameraFocusPoint> focusPoints = new List<CameraFocusPoint>();
 
@@ -36,7 +37,7 @@ public class GameCamera : MonoBehaviour
     {
         Vector3 target = AveragePos();
         float z = Utility.Interpolate(minZ, maxZ, 0, maxPlayerDistance, GetGreatestDistance());
-        target = new Vector3(target.x, target.y, -z);
+        target = new Vector3(target.x, target.y + yOffset, -z);
         Vector3 pos = Vector3.SmoothDamp(transform.position, target, ref currentVel, posSmoothness);
 
         transform.position = pos;

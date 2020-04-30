@@ -112,7 +112,74 @@ public class Audio_SoundTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.U))
         {
+            AM.StartCoroutine(AM.FadeIn(AM.AS_Music, AM.AC_EndTheme, 3f, 0.7f));
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Debug.Log("I pressed");
+          //  AM.FadeOut(AM.AS_Music, 2f);
+            AM.StartCoroutine(AM.FadeOut(AM.AS_Music, 2f));
+        }
+
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            AM.PlayMusic(AM.AC_BattleTheme, 0.8f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            AM.PlaySoundRandomPitch(AM.AS_Announcer, AM.AC_Countdown_1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
             AM.PlaySoundFullRandom(AM.AS_Movement, AM.AC_FootStep);
+        }
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            AM.PlaySoundFullRandom(AM.AS_Movement, AM.AC_Jump);
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            AM.PlaySound(AM.AS_Feedback, AM.AC_FlagTookAlly);
+        }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            
+            AM.PlaySoundRandomPitch(AM.AS_Feedback, AM.AC_Death);
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            AM.PlaySound(AM.AS_Feedback, AM.AC_RefereeWhistle);
+
+            AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_HalfTime);
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            AM.PlaySound(AM.AS_Announcer, AM.AS_Announcer.clip);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            AM.PlaySound(AM.AS_Movement, AM.AS_Movement.clip);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            AM.PlaySound(AM.AS_Fight, AM.AS_Fight.clip);
+        }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            AM.PlaySound(AM.AS_Feedback, AM.AS_Feedback.clip);
+        }
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            AM.PlaySound(AM.AS_Music, AM.AS_Music.clip);
         }
 
     }

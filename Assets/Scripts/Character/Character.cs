@@ -28,6 +28,7 @@ public class Character : MonoBehaviour
 
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
+    public GameObject flagBearerFx;
 
     [Header("Debug")]
     private bool receiveDebugInput = false;
@@ -101,15 +102,17 @@ public class Character : MonoBehaviour
         AttackUpdate();
         DodgeCooldown();
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
-
+        WallJumpUpdate();
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
+
+        flagBearerFx.SetActive(HasFlag);
     }
 
     private void OnDrawGizmos()
     {
         DrawBox();
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position + Vector3.up * 1.5f, transform.position + Vector3.up * 1.5f + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
+        Gizmos.DrawLine(transform.position + Vector3.up * m.castWallHeight, transform.position + Vector3.up * m.castWallHeight + transform.forward * m.castWallLength * Mathf.Abs(horizontalAxis));
     }
 
     #endregion
@@ -118,7 +121,7 @@ public class Character : MonoBehaviour
     private bool nullInput => horizontalAxis == 0 && verticalAxis == 0;
     private bool nullVelocity => body.velocity == Vector3.zero;
 
-    private bool downButton = false;
+    public bool DownButton { get; private set; }
 
     private void DebugInput()
     {
@@ -157,7 +160,7 @@ public class Character : MonoBehaviour
 
     public void InputDownButton(bool down)
     {
-        downButton = down;
+        DownButton = down;
     }
 
     #endregion
@@ -269,7 +272,7 @@ public class Character : MonoBehaviour
 
         else
         {
-            if (downButton && walkingOnPassThroughPlatform)
+            if (DownButton && WalkingOnPassThroughPlatform)
             {
                 CanPassThrough(true);
                 stateMachine.ChangeState(CharacterState.Falling);
@@ -316,7 +319,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(strength);
 
 
-        if (jumpProgress > 1f)
+        if (jumpProgress > 1f || CastCeiling())
         {
             SetVerticalVelocity(0);
             stateMachine.ChangeState(CharacterState.Falling);
@@ -334,11 +337,11 @@ public class Character : MonoBehaviour
     #region Fall
 
     private float yVelocityStartFall = 0f;
-    private float fallProgress = 0f;
+    public float FallProgress { get; private set; }
 
     private void ResetFallProgress()
     {
-        fallProgress = 0f;
+        FallProgress = 0f;
     }
 
     private void Falling_Enter()
@@ -355,9 +358,9 @@ public class Character : MonoBehaviour
             if (CastGround())
             {
                 bool land = false;
-                if (walkingOnPassThroughPlatform)
+                if (WalkingOnPassThroughPlatform)
                 {
-                    if (downButton)
+                    if (DownButton)
                     {
                         CanPassThrough(true);
                     }
@@ -381,12 +384,12 @@ public class Character : MonoBehaviour
                 }
             }
 
-            fallProgress += Time.deltaTime / m.timeToReachMaxFall;
-            fallProgress = Mathf.Clamp01(fallProgress);
+            FallProgress += Time.deltaTime / m.timeToReachMaxFall;
+            FallProgress = Mathf.Clamp01(FallProgress);
 
-            float mul = downButton ? 2 : 1;
+            float mul = DownButton ? 2 : 1;
 
-            float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed * mul, m.fallCurve.Evaluate(fallProgress));
+            float fall = Mathf.Lerp(yVelocityStartFall, -m.maxFallSpeed * mul, m.fallCurve.Evaluate(FallProgress));
             SetVerticalVelocity(fall);
 
             if (CastWall())
@@ -399,6 +402,7 @@ public class Character : MonoBehaviour
     private void Falling_Exit()
     {
         animator.Falling(false);
+        FallProgress = 0f;
     }
 
     #endregion
@@ -408,6 +412,7 @@ public class Character : MonoBehaviour
     private bool isWallSliding => CurrentState == CharacterState.WallSliding;
     private float wallSlidingProgress = 0f;
     private float initialVelocity;
+    private Coroutine leavingWallSlide;
 
     private void WallSliding_Enter()
     {
@@ -417,6 +422,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(-m.minWallSlideSpeed);
         SetHorizontalVelocity(0);
         wallSlideFx.Play();
+        FlipVisuals(true);
     }
 
     private void WallSliding_Update()
@@ -424,37 +430,65 @@ public class Character : MonoBehaviour
         wallSlidingProgress += Time.deltaTime / m.timeToReachMaxSlide;
         wallSlidingProgress = Mathf.Clamp01(wallSlidingProgress);
 
-        float slide = Mathf.Lerp(initialVelocity, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
+        float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
         SetVerticalVelocity(slide);
         SetHorizontalVelocity(0);
 
         if (!CastWall())
         {
-            stateMachine.ChangeState(CharacterState.Falling);
+            leavingWallSlide = StartCoroutine(LeavingWallSlide());
+        }
+
+        if(CastWall())
+        {
+            if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
         }
 
         if (CastGround())
         {
+            if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
             SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
         }
+    }
+
+    private IEnumerator LeavingWallSlide()
+    {
+        yield return new WaitForSeconds(m.wallSlideBuffer);
+        stateMachine.ChangeState(CharacterState.Falling);
     }
 
     private void WallSliding_Exit()
     {
         animator.WallSliding(false);
         wallSlideFx.Stop();
+        FlipVisuals(false);
     }
 
     #endregion
 
     #region WallJump
 
+    private bool wallJumping = false;
+
     private void WallJump()
     {
         Vector3 jumpDir = (hitWall.normal + Vector3.up).normalized;
-        p.RegisterPropulsion(jumpDir, m.wallJump);
+        p.RegisterPropulsion(jumpDir, m.wallJump, EndWallJump);
         animator.WallJump();
+        wallJumping = true;
+    }
+
+    private void WallJumpUpdate()
+    {
+        //if (wallJumping)
+            //FlipVisuals(true);
+    }
+
+    private void EndWallJump()
+    {
+        wallJumping = false;
+        //FlipVisuals(false);
     }
 
     #endregion
@@ -479,7 +513,7 @@ public class Character : MonoBehaviour
             attackCooldownDone = false;
             attackCooldownProgress = 0f;
             p.RegisterPropulsion(lastAttackDirection, m.attackImpulse);
-            animator.Attack();
+            animator.Attacking(true);
         }
     }
 
@@ -496,7 +530,7 @@ public class Character : MonoBehaviour
                     Character chara;
                     if (hitsAttack[i].collider.TryGetComponent(out chara))
                     {
-                        if (chara != this)
+                        if (chara != this && chara.TeamIndex != TeamIndex)
                         {
                             if (!chara.IsDodging)
                             {
@@ -511,6 +545,7 @@ public class Character : MonoBehaviour
             attackProgress += Time.deltaTime / m.attackDuration;
             if (attackProgress >= 1)
             {
+                animator.Attacking(false);
                 IsAttacking = false;
             }
         }
@@ -533,7 +568,7 @@ public class Character : MonoBehaviour
     {
         if (!chara.IsDead)
         {
-            if(chara.HasFlag)
+            if (chara.HasFlag)
             {
                 UIManager.Instance.LogMessage(PlayerName + " retrieved the flag from " + chara.PlayerName);
             }
@@ -555,7 +590,7 @@ public class Character : MonoBehaviour
     public Vector3 AttackOrigin => transform.position + Vector3.up * m.attackOrigin + (IsAttacking ? lastAttackDirection : attackDirection) * m.attackOffset;
     public Vector3 CastBox => new Vector3(m.castBoxWidth, 0, m.castBoxWidth);
     public Vector3 AttackBox => new Vector3(m.attackWidth, m.attackWidth, m.attackWidth);
-    private RaycastHit hitGround;
+    private RaycastHit[] hitGrounds;
     private RaycastHit hitCeiling;
     private RaycastHit[] hitsAttack;
     private RaycastHit hitWall;
@@ -578,7 +613,7 @@ public class Character : MonoBehaviour
 
     public bool CastCeiling()
     {
-        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.BoxCast(HeadOrigin, CastBox * m.groundCastRadius, Vector3.up, out hitCeiling, Quaternion.identity, m.castCeilingLength, m.wallMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -587,16 +622,17 @@ public class Character : MonoBehaviour
 
     public bool CastGround()
     {
-        if (Physics.BoxCast(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, out hitGround, Quaternion.identity, m.groundRaycastDown, m.groundMask, QueryTriggerInteraction.Ignore))
+        hitGrounds = Physics.BoxCastAll(FeetOrigin, CastBox * m.groundCastRadius, -Vector3.up, Quaternion.identity, m.groundRaycastDown, m.groundMask, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < hitGrounds.Length; i++)
         {
-            return true;
+            Debug.Log(hitGrounds[i].collider.gameObject.name);
         }
-        return false;
+        return hitGrounds.Length > 0;
     }
 
     public bool CastWall()
     {
-        if (Physics.Raycast(transform.position + Vector3.up * 1.5f, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position + Vector3.up * m.castWallHeight, transform.forward, out hitWall, m.castWallLength * Mathf.Abs(horizontalAxis), m.wallMask, QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -606,14 +642,14 @@ public class Character : MonoBehaviour
 
     private void SnapToGround()
     {
-        body.position = new Vector3(body.position.x, hitGround.point.y, body.position.z);
+        body.position = new Vector3(body.position.x, hitGrounds[0].point.y, body.position.z);
     }
 
     #endregion
 
     #region Layer
 
-    private bool walkingOnPassThroughPlatform => hitGround.collider != null ? hitGround.collider.gameObject.layer == m.passThroughLayer : false;
+    public bool WalkingOnPassThroughPlatform => hitGrounds != null ? (hitGrounds.Length > 0 ? hitGrounds[0].collider.gameObject.layer == m.passThroughLayerPlatform : false) : false;
     private bool canPassThrough => gameObject.layer == m.passThroughLayer;
     private void CanPassThrough(bool pass)
     {
@@ -680,12 +716,25 @@ public class Character : MonoBehaviour
 
     private float lastDir = 1;
 
+    private void FlipVisuals(bool flip)
+    {
+        float angle = 0f;
+        if (flip) angle = 180f;
+        visuals.transform.localEulerAngles = new Vector3(0, angle, 0);
+    }
+
     private void OrientModelToDirection()
     {
         if (horizontalAxis == 0) lastDir = Mathf.Sign(velocity.x);
         else
             lastDir = Mathf.Sign(velocity.x);
-        transform.forward = new Vector3(lastDir, 0, 0);
+
+        if (!wallJumping)
+        {
+            float targetAngle = lastDir * 90f;
+            Quaternion target = Quaternion.AngleAxis(targetAngle, Vector3.up);
+            transform.rotation = Quaternion.Lerp(transform.rotation, target, 0.1f);
+        }
     }
 
     private void UpdateFlagVisuals()
@@ -722,15 +771,19 @@ public class Character : MonoBehaviour
     #region Flag
 
     public bool HasFlag { get; private set; }
+    private Altar capturedAltar;
 
-    public void CaptureFlag()
+    public void CaptureFlag(Altar altar)
     {
+        capturedAltar = altar;
         HasFlag = true;
         UpdateFlagVisuals();
     }
 
     public void DropFlag()
     {
+        capturedAltar?.ResetFlag();
+        capturedAltar = null;
         HasFlag = false;
         UpdateFlagVisuals();
     }
@@ -747,6 +800,7 @@ public class Character : MonoBehaviour
             visuals.gameObject.SetActive(false);
             IsDead = true;
             fb.Play("Death");
+            DropFlag();
         }
     }
 
