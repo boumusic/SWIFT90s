@@ -46,9 +46,8 @@ public class CTFManager : NetworkBehaviour
     [ClientRpc]
     public void RpcStartTimer()
     {
-        Debug.Log("start");
-        Countdown.Instance.StartCountdown(3, ()=>
-        {
+AudioManager.instance.PlayMusic(AudioManager.instance.AC_BattleTheme, 0.7f);
+        Countdown.Instance.StartCountdown(3, ()=>        {
             timer = new Timer(minutes, seconds, TimerOver);
             timer.Start();
 
