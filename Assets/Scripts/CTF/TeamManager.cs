@@ -12,7 +12,7 @@ public class Team
     public int Score { get => score; set => score = value; }
 
     public bool HasWon { get; private set; }
-    private int score;
+    public int score;
     private Color color;
 
     public void EarnPoint(int point = 1)
@@ -50,14 +50,6 @@ public class Team
             Debug.Log(player.PlayerName + " left team " + index);
         }
     }
-
-    public void ToggleInputs(bool on)
-    {
-        for (int i = 0; i < players.Count; i++)
-        {
-            players[i].ToggleInputs(on);
-        }
-    }
 }
 
 public class TeamManager : MonoBehaviour
@@ -76,6 +68,8 @@ public class TeamManager : MonoBehaviour
     public List<Team> teams = new List<Team>();
     public List<Color> colors = new List<Color>();
 
+    public bool InputEnabled { get; private set; }
+
     public int GetIndex(NetworkedPlayer player)
     {
         for (int i = 0; i < teams.Count; i++)
@@ -91,6 +85,7 @@ public class TeamManager : MonoBehaviour
 
     private void Awake()
     {
+        InputEnabled = true;
         InitializeTeams();
     }
 
@@ -124,10 +119,7 @@ public class TeamManager : MonoBehaviour
 
     public void ToggleInputs(bool on)
     {
-        for (int i = 0; i < teams.Count; i++)
-        {
-            teams[i].ToggleInputs(on);
-        }
+        InputEnabled = on;
     }
 
     public void Score(int i)

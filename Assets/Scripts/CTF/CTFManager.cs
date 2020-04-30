@@ -29,7 +29,8 @@ public class CTFManager : NetworkBehaviour
 
     private void Start()
     {
-        StartTimer();
+        timer = new Timer(minutes, seconds, TimerOver);
+        Countdown.Instance.StartCountdown(3, StartTimer, "FIGHT");
     }
 
     private void StartTimer()
@@ -95,7 +96,10 @@ public class CTFManager : NetworkBehaviour
 
     private void StartHalfTime()
     {
+        AudioManager AM = AudioManager.instance;
         reachedHalfTime = true;
+        AM.PlaySound(AM.AS_Feedback, AM.AC_RefereeWhistle);
+        AM.PlaySoundRandomInList(AM.AS_Announcer, AM.AC_HalfTime);
 
         //Spawn l'écran de halftime
         UIManager.Instance.DisplayHalftimeMessage();

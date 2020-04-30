@@ -847,7 +847,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  teamIndex: 0
+  teamIndex: 1
   character: {fileID: 1572720513423746987}
   animator: {fileID: 3422047821608393806}
   jumpKey: 32

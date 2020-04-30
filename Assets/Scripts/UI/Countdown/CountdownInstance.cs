@@ -8,9 +8,9 @@ public class CountdownInstance : MonoBehaviour
     [Header("Components")]
     public TextMeshProUGUI text;
 
-    public void In(int count)
+    public void In(int count, string end = "")
     {
-        text.text = count.ToString();
+        text.text = end != "" ? end : count.ToString();
         StartCoroutine(Deactivate());
     }
 

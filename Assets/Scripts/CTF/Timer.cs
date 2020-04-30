@@ -12,6 +12,7 @@ public class Timer
 
     private float timeLeft = 0f;
     private bool isFinished = false;
+    private bool isStarted = false;
 
     public float TimeLeft { get => timeLeft; set => timeLeft = value; }
 
@@ -20,28 +21,33 @@ public class Timer
         this.minutes = minutes;
         this.seconds = seconds;
         this.action = action;
+        timeLeft = minutes * 60 + seconds;
     }
 
     public void Start()
     {
-        timeLeft = minutes * 60 + seconds;
+        isStarted = true;
     }
 
     public void Update()
     {
-        if (timeLeft <= 0)
+        if(isStarted)
         {
-            if(!isFinished)
+            if (timeLeft <= 0)
             {
-                action?.Invoke();
-                isFinished = true;
-                timeLeft = 0f;
-            }            
-        }
+                if (!isFinished)
+                {
+                    action?.Invoke();
+                    isFinished = true;
+                    timeLeft = 0f;
+                    isStarted = false;
+                }
+            }
 
-        else
-        {
-            timeLeft -= Time.deltaTime;
+            else
+            {
+                timeLeft -= Time.deltaTime;
+            }
         }        
     }
 
