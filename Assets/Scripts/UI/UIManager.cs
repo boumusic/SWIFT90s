@@ -54,6 +54,9 @@ public class UIManager : MonoBehaviour
     public GameOver gameOver;
 
     [Header("Portraits")]
+    public float portraitOffset = 20f;
+    public float portraitHeight = 20f;
+    public float portraitSpacing = 300f;
     public GameObject portraitPrefab;
     public Transform portraitParent;
     private List<PlayerPortrait> portraits = new List<PlayerPortrait>();
@@ -123,7 +126,9 @@ public class UIManager : MonoBehaviour
                 GameObject newPortrait = Instantiate(portraitPrefab, portraitParent);
                 PlayerPortrait portrait = newPortrait.GetComponent<PlayerPortrait>();
                 portraits.Add(portrait);
-                portrait.rect.anchoredPosition = Vector3.zero +Vector3.right *  index * 300;
+                Vector3 position0 = new Vector3(portraitOffset + index * 300, portraitHeight, 0);
+                Vector3 position1 = new Vector3(Screen.width - portraitOffset - index * 300, portraitHeight, 0);
+                portrait.rect.anchoredPosition = t == 0? position0 : position1;
                 index++;
             }
         }

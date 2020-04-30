@@ -56,6 +56,7 @@ public class CharacterSettings : ScriptableObject
     public float timeToReachMaxSlide = 0.5f;
     public float minWallSlideSpeed = 4f;
     public float maxWallSlideSpeed = 4f;
+    public float wallSlideBuffer = 0.2f;
     public AnimationCurve slideCurve;
 
     [Header("WallJump")]
