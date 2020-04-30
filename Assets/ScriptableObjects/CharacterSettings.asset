@@ -242,12 +242,12 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.35
+    duration: 0.5
     airControl: 1
     direction: {x: 0, y: 0, z: 0}
     priority: 0
     separateAxes: 1
-    strengthHoriz: 30
+    strengthHoriz: 20
     curveHoriz:
       serializedVersion: 2
       m_Curve:
@@ -290,7 +290,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    strengthVerti: 17
+    strengthVerti: 5
     curveVerti:
       serializedVersion: 2
       m_Curve:

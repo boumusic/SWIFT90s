@@ -1523,11 +1523,7 @@ MonoBehaviour:
   - {fileID: 1193177104584496631}
   - {fileID: -8583435159827315106}
   - {fileID: 6916719554252870017}
-  - {fileID: -9127900770939655689}
-  - {fileID: -7687040904726084262}
   - {fileID: -2786599740340027918}
-  - {fileID: -5010299860900108156}
-  - {fileID: -5965731010912656140}
   - {fileID: -1802087327287543052}
 --- !u!114 &1193177104584496631
 MonoBehaviour:
@@ -1579,7 +1575,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.233
+    value: 0.112
   fastMode:
     overrideState: 1
     value: 0

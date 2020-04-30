@@ -580,6 +580,9 @@ MonoBehaviour:
   pause: {fileID: 2166135788349268785}
   uiFlagZonePrefab: {fileID: 0}
   gameOver: {fileID: 758235620589672525}
+  portraitOffset: 70
+  portraitHeight: 0
+  portraitSpacing: 300
   portraitPrefab: {fileID: 7271756575833014155, guid: 316be43efdcb4c8428573033afd85666,
     type: 3}
   portraitParent: {fileID: 3988394360875238330}

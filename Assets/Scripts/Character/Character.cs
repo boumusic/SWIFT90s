@@ -101,7 +101,7 @@ public class Character : MonoBehaviour
         AttackUpdate();
         DodgeCooldown();
         p.FeedInputs(new Vector2(horizontalAxis, verticalAxis));
-
+        WallJumpUpdate();
         animator.Run(Mathf.Abs(velocity.x) >= 0.01f && grounded);
     }
 
@@ -316,7 +316,7 @@ public class Character : MonoBehaviour
         SetVerticalVelocity(strength);
 
 
-        if (jumpProgress > 1f ||CastCeiling())
+        if (jumpProgress > 1f || CastCeiling())
         {
             SetVerticalVelocity(0);
             stateMachine.ChangeState(CharacterState.Falling);
@@ -409,6 +409,7 @@ public class Character : MonoBehaviour
     private bool isWallSliding => CurrentState == CharacterState.WallSliding;
     private float wallSlidingProgress = 0f;
     private float initialVelocity;
+    private Coroutine leavingWallSlide;
 
     private void WallSliding_Enter()
     {
@@ -426,20 +427,32 @@ public class Character : MonoBehaviour
         wallSlidingProgress += Time.deltaTime / m.timeToReachMaxSlide;
         wallSlidingProgress = Mathf.Clamp01(wallSlidingProgress);
 
-        float slide = Mathf.Lerp(initialVelocity, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
+        float slide = Mathf.Lerp(-m.minWallSlideSpeed, -m.maxWallSlideSpeed, m.slideCurve.Evaluate(wallSlidingProgress));
         SetVerticalVelocity(slide);
         SetHorizontalVelocity(0);
 
         if (!CastWall())
         {
-            stateMachine.ChangeState(CharacterState.Falling);
+            leavingWallSlide = StartCoroutine(LeavingWallSlide());
+        }
+
+        if(CastWall())
+        {
+            if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
         }
 
         if (CastGround())
         {
+            if (leavingWallSlide != null) StopCoroutine(LeavingWallSlide());
             SnapToGround();
             stateMachine.ChangeState(CharacterState.Grounded);
         }
+    }
+
+    private IEnumerator LeavingWallSlide()
+    {
+        yield return new WaitForSeconds(m.wallSlideBuffer);
+        stateMachine.ChangeState(CharacterState.Falling);
     }
 
     private void WallSliding_Exit()
@@ -453,17 +466,26 @@ public class Character : MonoBehaviour
 
     #region WallJump
 
+    private bool wallJumping = false;
+
     private void WallJump()
     {
         Vector3 jumpDir = (hitWall.normal + Vector3.up).normalized;
         p.RegisterPropulsion(jumpDir, m.wallJump, EndWallJump);
         animator.WallJump();
-        FlipVisuals(true);
+        wallJumping = true;
+    }
+
+    private void WallJumpUpdate()
+    {
+        //if (wallJumping)
+            //FlipVisuals(true);
     }
 
     private void EndWallJump()
     {
-        FlipVisuals(false);
+        wallJumping = false;
+        //FlipVisuals(false);
     }
 
     #endregion
@@ -542,7 +564,7 @@ public class Character : MonoBehaviour
     {
         if (!chara.IsDead)
         {
-            if(chara.HasFlag)
+            if (chara.HasFlag)
             {
                 UIManager.Instance.LogMessage(PlayerName + " retrieved the flag from " + chara.PlayerName);
             }
@@ -696,13 +718,19 @@ public class Character : MonoBehaviour
         if (flip) angle = 180f;
         visuals.transform.localEulerAngles = new Vector3(0, angle, 0);
     }
-    
+
     private void OrientModelToDirection()
     {
         if (horizontalAxis == 0) lastDir = Mathf.Sign(velocity.x);
         else
             lastDir = Mathf.Sign(velocity.x);
-        transform.forward = new Vector3(lastDir, 0, 0);
+
+        if (!wallJumping)
+        {
+            float targetAngle = lastDir * 90f;
+            Quaternion target = Quaternion.AngleAxis(targetAngle, Vector3.up);
+            transform.rotation = Quaternion.Lerp(transform.rotation, target, 0.1f);
+        }
     }
 
     private void UpdateFlagVisuals()
