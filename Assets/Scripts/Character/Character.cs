@@ -742,7 +742,7 @@ public class Character : MonoBehaviour
         flagVisuals.gameObject.SetActive(HasFlag);
     }
 
-    private void UpdateTextName()
+    public void UpdateTextName()
     {
         textName.text = PlayerName;
     }
@@ -756,7 +756,7 @@ public class Character : MonoBehaviour
 
     public string PlayerName => "KRUSHER98";
 
-    private void UpdateTexture()
+    public void UpdateTexture()
     {
         Material mat = new Material(rends[0].material);
         mat.SetTexture("_MainTex", characterTextures[TeamIndex]);
