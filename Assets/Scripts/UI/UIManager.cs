@@ -81,6 +81,11 @@ public class UIManager : MonoBehaviour
 
         PositionKillFeeds();
 
+        if(Input.GetKeyDown(KeyCode.J))
+        {
+            DisplayKillFeed(FindObjectOfType<Character>(), FindObjectOfType<Character>());
+        }
+
         //scoreboard.gameObject.SetActive(player.Tab);
         //sensText.text = "sensitivity : " + player.sensitivity.ToString("F3") + "/1";
         //flowText.text = "Flow : " + player.Character.CurrentFlow.ToString("F2") + "/200";

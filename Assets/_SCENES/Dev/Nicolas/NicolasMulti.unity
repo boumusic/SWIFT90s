@@ -322,6 +322,36 @@ PrefabInstance:
       propertyPath: sceneId
       value: 1927139262
       objectReference: {fileID: 0}
+    - target: {fileID: 4604683422179183552, guid: 6b5db21e77d92304486e00b185c9237f,
+        type: 3}
+      propertyPath: sceneId
+      value: 3360097866
+      objectReference: {fileID: 0}
+    - target: {fileID: 4604683422839819800, guid: 6b5db21e77d92304486e00b185c9237f,
+        type: 3}
+      propertyPath: sceneId
+      value: 1559688422
+      objectReference: {fileID: 0}
+    - target: {fileID: 6186531643518760442, guid: 6b5db21e77d92304486e00b185c9237f,
+        type: 3}
+      propertyPath: sceneId
+      value: 4037639115
+      objectReference: {fileID: 0}
+    - target: {fileID: 6186531644182898158, guid: 6b5db21e77d92304486e00b185c9237f,
+        type: 3}
+      propertyPath: sceneId
+      value: 4007858090
+      objectReference: {fileID: 0}
+    - target: {fileID: 6186531644649910689, guid: 6b5db21e77d92304486e00b185c9237f,
+        type: 3}
+      propertyPath: sceneId
+      value: 3844927804
+      objectReference: {fileID: 0}
+    - target: {fileID: 6186531644709371585, guid: 6b5db21e77d92304486e00b185c9237f,
+        type: 3}
+      propertyPath: sceneId
+      value: 1841606178
+      objectReference: {fileID: 0}
     - target: {fileID: 7951940356101125270, guid: 6b5db21e77d92304486e00b185c9237f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1863,6 +1893,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2371626590127086811, guid: fe885c7988dba0b4787a4363457a571e,
+        type: 3}
+      propertyPath: sceneId
+      value: 3687139973
       objectReference: {fileID: 0}
     - target: {fileID: 2396493767077662103, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
