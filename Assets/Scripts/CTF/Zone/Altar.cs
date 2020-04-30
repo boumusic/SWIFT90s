@@ -18,9 +18,9 @@ public class Altar : LevelZone
     public override void OnCharacterStay(Character character)
     {
         base.OnCharacterStay(character);
-        if(!character.HasFlag && isEnabled && character.TeamIndex != teamIndex)
+        if(!character.HasFlag && isEnabled && character.TeamIndex != teamIndex && !character.IsDead)
         {
-            character.CaptureFlag();
+            character.CaptureFlag(this);
             UpdateFlag();
             captured = true;
             CTFManager.Instance.CapturedFlagOfTeam(teamIndex);
