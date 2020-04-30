@@ -174,7 +174,7 @@ MonoBehaviour:
   timeToReachMaxSlide: 1
   minWallSlideSpeed: 0.8
   maxWallSlideSpeed: 12
-  wallSlideBuffer: 0.2
+  wallSlideBuffer: 0.35
   slideCurve:
     serializedVersion: 2
     m_Curve:

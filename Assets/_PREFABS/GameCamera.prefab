@@ -75,10 +75,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7226412d0d226e94fb0338c75f585b26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  posSmoothness: 0.07
-  minZ: 5
+  posSmoothness: 0.15
+  minZ: 7
   maxZ: 60
   maxPlayerDistance: 35
+  yOffset: 1
 --- !u!1 &4430181479361662705
 GameObject:
   m_ObjectHideFlags: 0

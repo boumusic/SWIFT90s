@@ -126,9 +126,10 @@ public class UIManager : MonoBehaviour
                 GameObject newPortrait = Instantiate(portraitPrefab, portraitParent);
                 PlayerPortrait portrait = newPortrait.GetComponent<PlayerPortrait>();
                 portraits.Add(portrait);
-                Vector3 position0 = new Vector3(portraitOffset + index * 300, portraitHeight, 0);
-                Vector3 position1 = new Vector3(Screen.width - portraitOffset - index * 300, portraitHeight, 0);
-                portrait.rect.anchoredPosition = t == 0? position0 : position1;
+                Vector3 position = new Vector3(portraitOffset + index * 300 * (t == 0 ? 1 : -1), portraitHeight, 0);
+                portrait.rect.anchorMin = new Vector2(t, 0);
+                portrait.rect.anchorMax = new Vector2(t, 0);
+                portrait.rect.anchoredPosition = position;
                 portrait.UpdateVisuals(tm.teams[t].players[p].character);
                 index++;
             }

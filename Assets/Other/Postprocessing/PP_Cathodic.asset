@@ -87,7 +87,7 @@ MonoBehaviour:
     value: 1
   resolution:
     overrideState: 1
-    value: 384
+    value: 500
 --- !u!114 &-5965731010912656140
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -106,7 +106,7 @@ MonoBehaviour:
     value: 1
   distort:
     overrideState: 1
-    value: 0.032
+    value: 0.005
   tiling:
     overrideState: 1
     value: 200
@@ -141,13 +141,13 @@ MonoBehaviour:
     value: 0.0007
   tiling:
     overrideState: 1
-    value: 2996
+    value: 3000
   scroll:
     overrideState: 1
     value: 20
   color:
     overrideState: 1
-    value: {r: 0.11307404, g: 0.13433383, b: 0.1981132, a: 1}
+    value: {r: 0.053755786, g: 0.058691222, b: 0.0754717, a: 1}
 --- !u!114 &-2786599740340027918
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1523,7 +1523,11 @@ MonoBehaviour:
   - {fileID: 1193177104584496631}
   - {fileID: -8583435159827315106}
   - {fileID: 6916719554252870017}
+  - {fileID: -9127900770939655689}
+  - {fileID: -7687040904726084262}
   - {fileID: -2786599740340027918}
+  - {fileID: -5010299860900108156}
+  - {fileID: -5965731010912656140}
   - {fileID: -1802087327287543052}
 --- !u!114 &1193177104584496631
 MonoBehaviour:
@@ -1575,7 +1579,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.112
+    value: 0.08
   fastMode:
     overrideState: 1
     value: 0
