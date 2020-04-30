@@ -6387,11 +6387,6 @@ PrefabInstance:
       propertyPath: teams.Array.size
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3857582240084677124, guid: fe885c7988dba0b4787a4363457a571e,
-        type: 3}
-      propertyPath: minutes
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6945832414565111299, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -6410,11 +6405,6 @@ PrefabInstance:
     - target: {fileID: 6945832414565111299, guid: fe885c7988dba0b4787a4363457a571e,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7959922905249195885, guid: fe885c7988dba0b4787a4363457a571e,
-        type: 3}
-      propertyPath: lan
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8121535608739700362, guid: fe885c7988dba0b4787a4363457a571e,
