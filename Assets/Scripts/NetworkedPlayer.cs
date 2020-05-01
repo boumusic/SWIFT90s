@@ -7,7 +7,7 @@ public class NetworkedPlayer : NetworkBehaviour
 {
     [SyncVar]
     public int teamIndex;
-    [SyncVar]
+    [SyncVar(hook ="UpdateName")]
     public string username;
 
     public Character character;
@@ -35,10 +35,7 @@ public class NetworkedPlayer : NetworkBehaviour
         }
         else
         {
-            username = FindObjectOfType<PlayerInfo>().username;
-            character.UpdateTextName();
-
-            CmdUpdateName();
+            CmdUpdateName(FindObjectOfType<PlayerInfo>().username);
 
             spawnPosition = transform.position;
 
@@ -56,13 +53,12 @@ public class NetworkedPlayer : NetworkBehaviour
     }
 
     [Command]
-    void CmdUpdateName()
+    void CmdUpdateName(string name)
     {
-        RpcUpdateName();
+        username = name;
     }
 
-    [ClientRpc]
-    void RpcUpdateName()
+    public void UpdateName(string oldValue, string newValue)
     {
         character.UpdateTextName();
         UIManager.Instance.RefreshPortraits();
