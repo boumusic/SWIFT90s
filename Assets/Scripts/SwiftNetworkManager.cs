@@ -14,6 +14,11 @@ public class SwiftNetworkManager : NetworkManager
         ctfManager.Awake();
         teamManager.Awake();
 
+    }
+
+    public override void Start()
+    {
+
         switch (FindObjectOfType<PlayerInfo>().role)
         {
             case 0:
