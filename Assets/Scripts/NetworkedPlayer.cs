@@ -6,13 +6,13 @@ using Mirror;
 public class NetworkedPlayer : NetworkBehaviour
 {
     [SyncVar]
-    public int teamIndex;
-    [SyncVar(hook ="UpdateName")]
-    public string username = "Krusher98";
+    private int teamIndex = 0;
+    [SyncVar(hook = nameof(UpdateName))]
+    private string username = "Krusher98";
 
     public Character character;
     public NetworkAnimator animator;
-    public Team Team => TeamManager.Instance.teams[teamIndex];
+    public Team Team => TeamManager.Instance.teams[TeamIndex];
 
     [Header("Inputs")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -21,11 +21,14 @@ public class NetworkedPlayer : NetworkBehaviour
     public KeyCode tauntKey = KeyCode.E;
     private bool inputEnabled => TeamManager.Instance.InputEnabled;
 
+    public int TeamIndex { get => teamIndex; set => teamIndex = value; }
+    public string Username { get => username;}
+
     [HideInInspector] public Vector3 spawnPosition;
 
     private void Start()
     {
-        character.Initialize(this);
+        character.Initialize();
         if (!hasAuthority)
         {
             character.enabled = false;
@@ -49,7 +52,7 @@ public class NetworkedPlayer : NetworkBehaviour
             //character.animator.onDodgeAnim += () => animator.SetTrigger("Dodge");
         }
 
-        TeamManager.Instance.JoinTeam(teamIndex, this);
+        TeamManager.Instance.JoinTeam(TeamIndex, this);
     }
 
     [Command]
@@ -142,7 +145,7 @@ public class NetworkedPlayer : NetworkBehaviour
 
         if (!hasAuthority) return;
 
-        transform.position = teamIndex == 0 ? NetworkManager.startPosition0.position : NetworkManager.startPosition1.position;
+        transform.position = TeamIndex == 0 ? NetworkManager.startPosition0.position : NetworkManager.startPosition1.position;
 
         spawnPosition = transform.position;
     }

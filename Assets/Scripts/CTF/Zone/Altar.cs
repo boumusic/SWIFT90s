@@ -35,11 +35,15 @@ public class Altar : LevelZone
     public void ResetFlag()
     {
         captured = false;
+        isEnabled = true;
         UpdateFlag();
+
+        Debug.Log("resetting flag");
     }
 
     public void Enable(bool enable)
     {
+        captured = false;
         isEnabled = enable;
         UpdateFlag();
     }

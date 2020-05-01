@@ -34,7 +34,7 @@ public class SwiftNetworkManager : NetworkManager
     {
         GameObject player = base.OnServerAddPlayer(conn);
 
-        player.GetComponent<NetworkedPlayer>().teamIndex = (numPlayers % 2 == 0) ? 1 : 0;
+        player.GetComponent<NetworkedPlayer>().TeamIndex = (numPlayers % 2 == 0) ? 1 : 0;
 
         if (numPlayers == maxConnections)
         {

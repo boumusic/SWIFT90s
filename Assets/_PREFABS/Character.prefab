@@ -700,6 +700,7 @@ MonoBehaviour:
   p: {fileID: 7340245766873752142}
   defaultCollider: {fileID: 3393876562571969093}
   dodgeCollider: {fileID: 4309717621872774917}
+  player: {fileID: 4669632740155365152}
   animator: {fileID: 6942889159288483982}
   visuals: {fileID: 1572720511621717538}
   fb: {fileID: 4133962946557197324}
@@ -849,8 +850,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  teamIndex: 1
-  username: 
   character: {fileID: 1572720513423746987}
   animator: {fileID: 3422047821608393806}
   jumpKey: 32

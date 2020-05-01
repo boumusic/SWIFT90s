@@ -173,15 +173,21 @@ AudioManager.instance.PlayMusic(AudioManager.instance.AC_BattleTheme, 0.7f);
             shrines.Add(shrine);
             shrinePositions.Add(shrine.transform.position);
         }
+        shrines[0].transform.position = shrinePositions[1];
+        shrines[1].transform.position = shrinePositions[0];
+
+
         foreach (var altar in FindObjectsOfType<Altar>())
         {
             altars.Add(altar);
+        }
+
+        altars.Sort((x, y) => x.teamIndex.CompareTo(y.teamIndex));
+
+        foreach (var altar in altars)
+        {
             altarPositions.Add(altar.transform.position);
         }
-        altars.OrderBy((x) => x.teamIndex);
-
-        shrines[0].transform.position = shrinePositions[1];
-        shrines[1].transform.position = shrinePositions[0];
 
         altars[0].transform.position = altarPositions[2];
         altars[1].transform.position = altarPositions[3];
@@ -214,6 +220,16 @@ AudioManager.instance.PlayMusic(AudioManager.instance.AC_BattleTheme, 0.7f);
             if (zones[i] is Altar && zones[i].teamIndex == teamIndex)
             {
                 (zones[i] as Altar).Enable(false);
+            }
+        }
+    }
+    public void RetrievedFlagOfTeam(int teamIndex)
+    {
+        for (int i = 0; i < zones.Count; i++)
+        {
+            if (zones[i] is Altar && zones[i].teamIndex == teamIndex)
+            {
+                (zones[i] as Altar).Enable(true);
             }
         }
     }

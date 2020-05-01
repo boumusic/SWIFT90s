@@ -15,6 +15,7 @@ public class Character : MonoBehaviour
     public Propeller p;
     public Collider defaultCollider;
     public GameObject dodgeCollider;
+    public NetworkedPlayer player;
 
     [Header("Visuals")]
     public CharacterAnimator animator;
@@ -24,7 +25,6 @@ public class Character : MonoBehaviour
     public Flag flagVisuals;
     public Renderer[] rends;
     public TextMeshPro textName;
-    private NetworkedPlayer player;
 
     [Header("VFX")]
     public ParticleSystem wallSlideFx;
@@ -72,9 +72,8 @@ public class Character : MonoBehaviour
     }
 
     private float initialZ;
-    public void Initialize(NetworkedPlayer player)
+    public void Initialize()
     {
-        this.player = player;
         SwitchDodgeCollider(false);
         stateMachine = StateMachine<CharacterState>.Initialize(this);
         stateMachine.ManualUpdate = true;
@@ -826,9 +825,9 @@ public class Character : MonoBehaviour
     #region Team
 
     public Color TeamColor => TeamManager.Instance.GetTeamColor(TeamIndex);
-    public int TeamIndex => player.teamIndex;
+    public int TeamIndex => player.TeamIndex;
 
-    public string PlayerName => player.username;
+    public string PlayerName => player.Username;
 
     public void UpdateTexture()
     {
@@ -850,7 +849,7 @@ public class Character : MonoBehaviour
     public void CaptureFlag(Altar altar)
     {
         //SAME TEAM
-        if (UIManager.Instance.Player.teamIndex == TeamIndex)
+        if (UIManager.Instance.Player.TeamIndex == TeamIndex)
         {
             AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_FlagTookAlly);
         }
@@ -869,6 +868,10 @@ public class Character : MonoBehaviour
 
     public void DropFlag()
     {
+        if (capturedAltar != null)
+        {
+            CTFManager.Instance.RetrievedFlagOfTeam(capturedAltar.teamIndex);
+        }
         capturedAltar?.ResetFlag();
         capturedAltar = null;
         HasFlag = false;
@@ -880,7 +883,7 @@ public class Character : MonoBehaviour
     public void Score()
     {
         //SAME TEAM
-        if (UIManager.Instance.Player.teamIndex == TeamIndex)
+        if (UIManager.Instance.Player.TeamIndex == TeamIndex)
         {
             if (player.Team.Score == 0)
                 AudioManager.instance.PlaySound(AudioManager.instance.AS_Feedback, AudioManager.instance.AC_ScoreAlly_01);

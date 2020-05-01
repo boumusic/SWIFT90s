@@ -711,7 +711,6 @@ namespace Mirror
                 singleton = this;
                 if (Application.isPlaying)
                 {
-                    transform.parent = null;
                     DontDestroyOnLoad(gameObject);
                 }
             }
