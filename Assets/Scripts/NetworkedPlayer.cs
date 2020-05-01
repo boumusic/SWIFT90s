@@ -8,7 +8,7 @@ public class NetworkedPlayer : NetworkBehaviour
     [SyncVar]
     public int teamIndex;
     [SyncVar(hook ="UpdateName")]
-    public string username;
+    public string username = "Krusher98";
 
     public Character character;
     public NetworkAnimator animator;
