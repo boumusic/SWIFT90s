@@ -49,7 +49,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -4853,7 +4853,6 @@ GameObject:
   m_Component:
   - component: {fileID: 80222376853363254}
   - component: {fileID: 1900741243578377750}
-  - component: {fileID: 7875921981914413068}
   m_Layer: 0
   m_Name: StartPos
   m_TagString: Untagged
@@ -4887,22 +4886,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f84591ce72545258ea98cb7518d8b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7875921981914413068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4620469956574279901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!1 &6826172932935129483
 GameObject:
   m_ObjectHideFlags: 0
@@ -5048,7 +5031,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -9802,7 +9785,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 0
@@ -14556,7 +14539,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -19368,7 +19351,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -24180,7 +24163,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 0
@@ -29025,8 +29008,19 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 8150264180835774137, guid: 85f1c762501a85d4ca3df6b58d33c47a,
+        type: 3}
+      propertyPath: m_AssetId
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85f1c762501a85d4ca3df6b58d33c47a, type: 3}
+--- !u!135 &991588660128707405 stripped
+SphereCollider:
+  m_CorrespondingSourceObject: {fileID: 3270934961865322143, guid: 85f1c762501a85d4ca3df6b58d33c47a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2352680716336471506}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2385075080242340539 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 125849565778591593, guid: 85f1c762501a85d4ca3df6b58d33c47a,
@@ -29036,12 +29030,6 @@ GameObject:
 --- !u!4 &2385075080242340538 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 125849565778591592, guid: 85f1c762501a85d4ca3df6b58d33c47a,
-    type: 3}
-  m_PrefabInstance: {fileID: 2352680716336471506}
-  m_PrefabAsset: {fileID: 0}
---- !u!135 &991588660128707405 stripped
-SphereCollider:
-  m_CorrespondingSourceObject: {fileID: 3270934961865322143, guid: 85f1c762501a85d4ca3df6b58d33c47a,
     type: 3}
   m_PrefabInstance: {fileID: 2352680716336471506}
   m_PrefabAsset: {fileID: 0}

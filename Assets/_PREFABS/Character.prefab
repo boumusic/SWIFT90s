@@ -700,6 +700,7 @@ MonoBehaviour:
   p: {fileID: 7340245766873752142}
   defaultCollider: {fileID: 3393876562571969093}
   dodgeCollider: {fileID: 4309717621872774917}
+  player: {fileID: 4669632740155365152}
   animator: {fileID: 6942889159288483982}
   visuals: {fileID: 1572720511621717538}
   fb: {fileID: 4133962946557197324}
@@ -712,6 +713,7 @@ MonoBehaviour:
   textName: {fileID: 3909699475620869729}
   wallSlideFx: {fileID: 6648611608157902664}
   flagBearerFx: {fileID: 5925048857756009289}
+  receiveDebugInput: 0
   drawAttackHitbox: 1
   drawMovementHitbox: 1
 --- !u!54 &1572720513423746986
@@ -757,6 +759,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animators:
   - {fileID: 5911659169432628152}
+  nAnimator: {fileID: 3422047821608393806}
 --- !u!114 &4617116230361477735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -847,12 +850,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  teamIndex: 1
   character: {fileID: 1572720513423746987}
   animator: {fileID: 3422047821608393806}
   jumpKey: 32
   attackKey: 323
   dodgeKey: 324
+  tauntKey: 101
+  spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!136 &3393876562571969093
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2466,7 +2470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 053f3ff89e85cb74c88944e73b843cc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 1632326027667321361}
+  cam: {fileID: 0}
 --- !u!1 &6648611608157902662
 GameObject:
   m_ObjectHideFlags: 0

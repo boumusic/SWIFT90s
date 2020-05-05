@@ -168,11 +168,11 @@ MonoBehaviour:
   groundRaycastDown: 0.82
   castGroundOrigin: 0.47
   castWallHeight: 0.23
-  castWallLength: 1
+  castWallLength: 0.65
   castCeilingOrigin: 1.13
   castCeilingLength: 0.54
   timeToReachMaxSlide: 1
-  minWallSlideSpeed: 0.8
+  minWallSlideSpeed: 0
   maxWallSlideSpeed: 12
   wallSlideBuffer: 0.35
   slideCurve:
@@ -291,7 +291,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    strengthVerti: 5
+    strengthVerti: 10
     curveVerti:
       serializedVersion: 2
       m_Curve:

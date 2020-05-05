@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 using System;
 
 public class CharacterAnimator : MonoBehaviour
 {
     public Animator[] animators;
+    public NetworkAnimator nAnimator;
 
     public Action onLandAnim;
     public Action onJumpAnim;
@@ -124,11 +126,7 @@ public class CharacterAnimator : MonoBehaviour
 
     private void Trigger(string name)
     {
-        for (int i = 0; i < animators.Length; i++)
-        {
-            if (animators[i] == null) continue;
-            animators[i].SetTrigger(name);
-        }
+        nAnimator.SetTrigger(name);        
     }
 
     private void Bool(string name, bool value)

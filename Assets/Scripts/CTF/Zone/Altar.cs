@@ -11,8 +11,10 @@ public class Altar : LevelZone
     private bool isEnabled = true;
     private bool captured = false;
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
+
         flag.Initialize(teamIndex);
     }
 
@@ -24,8 +26,8 @@ public class Altar : LevelZone
             capturedFx.Play();
             UIManager.Instance.LogMessage(character.PlayerName + " Captured the flag of Team " + teamIndex + "!");
             character.CaptureFlag(this);
-            UpdateFlag();
             captured = true;
+            UpdateFlag();
             CTFManager.Instance.CapturedFlagOfTeam(teamIndex);
         }
     }
@@ -33,11 +35,15 @@ public class Altar : LevelZone
     public void ResetFlag()
     {
         captured = false;
+        isEnabled = true;
         UpdateFlag();
+
+        Debug.Log("resetting flag");
     }
 
     public void Enable(bool enable)
     {
+        captured = false;
         isEnabled = enable;
         UpdateFlag();
     }

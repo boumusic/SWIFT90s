@@ -212,7 +212,7 @@ namespace Mirror
                 spawnableObjects.Remove(sceneId);
                 return identity;
             }
-            logger.LogWarning("Could not find scene object with sceneid:" + sceneId.ToString("X"));
+            Debug.Log("Could not find scene object with sceneid:" + sceneId.ToString("X"));
             return null;
         }
 
@@ -483,10 +483,10 @@ namespace Mirror
         {
             if (msg.assetId == Guid.Empty && msg.sceneId == 0)
             {
-                logger.LogError("OnObjSpawn netId: " + msg.netId + " has invalid asset Id");
+                Debug.Log("OnObjSpawn netId: " + msg.netId + " has invalid asset Id");
                 return;
             }
-            if (logger.LogEnabled()) logger.Log($"Client spawn handler instantiating netId={msg.netId} assetID={msg.assetId} sceneId={msg.sceneId} pos={msg.position}");
+            Debug.Log($"Client spawn handler instantiating netId={msg.netId} assetID={msg.assetId} sceneId={msg.sceneId} pos={msg.position}");
 
             // was the object already spawned?
             NetworkIdentity identity = GetExistingObject(msg.netId);
@@ -498,7 +498,7 @@ namespace Mirror
 
             if (identity == null)
             {
-                logger.LogError($"Could not spawn assetId={msg.assetId} scene={msg.sceneId} netId={msg.netId}");
+                Debug.Log($"Could not spawn assetId={msg.assetId} scene={msg.sceneId} netId={msg.netId}");
                 return;
             }
 
@@ -542,13 +542,13 @@ namespace Mirror
             NetworkIdentity spawnedId = SpawnSceneObject(msg.sceneId);
             if (spawnedId == null)
             {
-                logger.LogError("Spawn scene object not found for " + msg.sceneId.ToString("X") + " SpawnableObjects.Count=" + spawnableObjects.Count);
+                Debug.Log("Spawn scene object not found for " + msg.sceneId.ToString("X") + " SpawnableObjects.Count=" + spawnableObjects.Count);
 
                 // dump the whole spawnable objects dict for easier debugging
-                if (logger.LogEnabled())
+                if (true)
                 {
                     foreach (KeyValuePair<ulong, NetworkIdentity> kvp in spawnableObjects)
-                        logger.Log("Spawnable: SceneId=" + kvp.Key + " name=" + kvp.Value.name);
+                        Debug.Log("Spawnable: SceneId=" + kvp.Key + " name=" + kvp.Value.name);
                 }
             }
 

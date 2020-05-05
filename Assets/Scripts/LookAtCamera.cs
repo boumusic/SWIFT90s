@@ -8,12 +8,11 @@ public class LookAtCamera : MonoBehaviour
 
     private void Update()
     {
-        if (cam == null)
-            return;
+        if(!cam)cam = Camera.main.transform;
 
         Vector3 pos = cam.position;
         Vector3 dir = pos - transform.position;
         if(dir!= Vector3.zero)
-            transform.forward = dir.normalized;
+            transform.forward = -dir.normalized;
     }
 }
