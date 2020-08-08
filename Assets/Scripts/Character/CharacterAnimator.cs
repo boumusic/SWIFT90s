@@ -126,6 +126,7 @@ public class CharacterAnimator : MonoBehaviour
 
     private void Trigger(string name)
     {
+        animators[0].SetTrigger(name);
         nAnimator.SetTrigger(name);        
     }
 

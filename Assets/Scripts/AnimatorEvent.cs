@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AnimatorEvent : MonoBehaviour
 {
-    private AudioManager AM = AudioManager.instance;
+    private AudioManager AM => AudioManager.instance;
     public void FootStep()
     {       
         AM.PlaySoundFullRandom(AM.AS_Movement, AM.AC_FootStep);

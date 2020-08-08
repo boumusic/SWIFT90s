@@ -152,6 +152,11 @@ public class Character : MonoBehaviour
             {
                 StartAttack();
             }
+
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                Taunt();
+            }
         }
     }
 
